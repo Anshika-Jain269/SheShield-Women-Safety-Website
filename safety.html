@@ -1,0 +1,2187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHEShield - Women's Safety First</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- CryptoJS for encryption -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #FF6B8B;
+            --secondary: #8A2BE2;
+            --accent: #00CED1;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+            --amazon: #FF9900;
+            --success: #2ECC71;
+            --danger: #E74C3C;
+            --ai-purple: #9b59b6;
+            --warning: #F39C12;
+            --emotional: #E91E63;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+        }
+
+        .back-to-map {
+            position: absolute;
+            left: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 12px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .back-to-map:hover {
+            background: var(--secondary);
+            transform: translateY(-50%) translateX(-5px);
+        }
+
+        .header h1 {
+            font-size: 2.8rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .tab-btn {
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            transform: translateY(-5px);
+        }
+
+        .tab-btn:hover {
+            background: rgba(255, 107, 139, 0.2);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Cards */
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .card h2 {
+            color: var(--primary);
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* Period Alarm - SIMPLE */
+        .period-alarm {
+            background: linear-gradient(135deg, rgba(255, 107, 139, 0.1), rgba(138, 43, 226, 0.1));
+        }
+
+        .alarm-display {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .next-period {
+            font-size: 3.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 20px 0;
+        }
+
+        .alarm-status {
+            display: inline-block;
+            padding: 10px 25px;
+            background: var(--success);
+            border-radius: 25px;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .alarm-status.active {
+            background: var(--danger);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .alarm-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .input-group label {
+            display: block;
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.08);
+            color: white;
+            font-size: 1rem;
+            resize: vertical;
+        }
+
+        /* Password visibility toggle */
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 40px;
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+            padding: 5px;
+            font-size: 1rem;
+        }
+
+        .password-toggle:hover {
+            color: white;
+        }
+
+        button {
+            padding: 15px 30px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(255, 107, 139, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+        }
+
+        /* Women's Safety Features */
+        .safety-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--primary);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        /* Videos */
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .video-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+
+        .video-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .video-thumbnail {
+            width: 100%;
+            height: 200px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .video-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .play-btn {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 107, 139, 0.9);
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .video-info {
+            padding: 20px;
+        }
+
+        .video-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        /* Amazon Products */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+        }
+
+        .product-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            overflow: hidden;
+            transition: transform 0.3s;
+            text-decoration: none;
+            color: white;
+            display: block;
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .product-image {
+            height: 200px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .product-image img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .product-info {
+            padding: 20px;
+        }
+
+        .product-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .product-price {
+            color: var(--amazon);
+            font-weight: bold;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+        }
+
+        /* Digital Locker - UPDATED */
+        .locker-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        @media (max-width: 1024px) {
+            .locker-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .locker-section {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 25px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .locker-section h3 {
+            color: var(--accent);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .locker-upload {
+            border: 3px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .locker-upload:hover {
+            border-color: var(--accent);
+            background: rgba(0, 206, 209, 0.1);
+        }
+
+        .files-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .file-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            position: relative;
+        }
+
+        .file-icon {
+            font-size: 2rem;
+            color: var(--accent);
+            margin-bottom: 10px;
+        }
+
+        .file-protected {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: var(--warning);
+            font-size: 0.8rem;
+        }
+
+        /* AI Chatbot Button */
+        .ai-chatbot-btn {
+            background: linear-gradient(135deg, var(--ai-purple), #8e44ad);
+            width: 100%;
+            padding: 20px;
+            font-size: 1.2rem;
+            margin-top: 20px;
+            border-radius: 15px;
+            border: 2px solid rgba(155, 89, 182, 0.3);
+            transition: all 0.3s;
+        }
+
+        .ai-chatbot-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(155, 89, 182, 0.3);
+        }
+
+        /* SECURE DATA PASSWORD MODAL */
+        .secure-data-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1001;
+        }
+
+        .secure-data-box {
+            background: #1a1a2e;
+            padding: 40px;
+            border-radius: 20px;
+            border: 2px solid var(--accent);
+            max-width: 400px;
+            width: 90%;
+        }
+
+        /* Emergency Button */
+        .emergency-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, var(--danger), #C0392B);
+            color: white;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 100;
+            animation: emergencyPulse 1.5s infinite;
+            box-shadow: 0 10px 30px rgba(231, 76, 60, 0.4);
+        }
+
+        @keyframes emergencyPulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7); }
+            70% { transform: scale(1.1); box-shadow: 0 0 0 15px rgba(231, 76, 60, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); }
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            bottom: 120px;
+            right: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px 30px;
+            border-radius: 15px;
+            border-left: 5px solid var(--primary);
+            transform: translateX(400px);
+            transition: transform 0.4s;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            max-width: 400px;
+            z-index: 99;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            border-left-color: var(--success);
+        }
+
+        .notification.error {
+            border-left-color: var(--danger);
+        }
+
+        /* Password Modal */
+        .password-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .password-box {
+            background: #1a1a2e;
+            padding: 40px;
+            border-radius: 20px;
+            border: 2px solid var(--primary);
+            max-width: 400px;
+            width: 90%;
+        }
+
+        /* Back to Map Button */
+        .bottom-nav {
+            text-align: center;
+            margin-top: 50px;
+            padding: 30px;
+        }
+
+        .bottom-nav button {
+            display: inline-flex;
+            margin: 0 10px;
+            min-width: 200px;
+        }
+
+        /* Secure Data Options */
+        .secure-data-options {
+            display: grid;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .secure-data-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .secure-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: var(--accent);
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .tabs {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .safety-features, .video-grid, .products-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2.2rem;
+            }
+            
+            .emergency-btn {
+                bottom: 20px;
+                right: 20px;
+                width: 60px;
+                height: 60px;
+            }
+            
+            .notification {
+                right: 20px;
+                left: 20px;
+                max-width: none;
+            }
+            
+            .back-to-map {
+                position: relative;
+                left: 0;
+                top: 0;
+                transform: none;
+                margin-bottom: 20px;
+                display: inline-flex;
+            }
+            
+            .header {
+                padding-top: 60px;
+            }
+            
+            .locker-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .tabs {
+                grid-template-columns: 1fr;
+            }
+            
+            .alarm-controls {
+                grid-template-columns: 1fr;
+            }
+            
+            .bottom-nav button {
+                width: 100%;
+                margin: 10px 0;
+            }
+        }
+
+        /* Period Alarm Status */
+        .period-status {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .period-card {
+            background: rgba(255, 107, 139, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid rgba(255, 107, 139, 0.2);
+        }
+
+        .period-card.active {
+            background: rgba(255, 107, 139, 0.2);
+            border-color: var(--primary);
+        }
+
+        .period-icon {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        /* Mood Analysis */
+        .mood-analysis {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(233, 30, 99, 0.1);
+            border-radius: 10px;
+            border: 1px solid rgba(233, 30, 99, 0.2);
+        }
+
+        .mood-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .mood-tag {
+            padding: 5px 12px;
+            background: rgba(233, 30, 99, 0.2);
+            border-radius: 15px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .mood-tag:hover {
+            background: rgba(233, 30, 99, 0.4);
+            transform: translateY(-2px);
+        }
+
+        /* Alarm Sound Controls */
+        .alarm-sound-controls {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(26, 26, 46, 0.95);
+            border: 3px solid var(--primary);
+            border-radius: 20px;
+            padding: 40px;
+            z-index: 1002;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+            max-width: 500px;
+            width: 90%;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .alarm-sound-controls.active {
+            display: flex;
+            animation: alarmModalFade 0.3s ease-out;
+        }
+
+        @keyframes alarmModalFade {
+            from { opacity: 0; transform: translate(-50%, -60%); }
+            to { opacity: 1; transform: translate(-50%, -50%); }
+        }
+
+        .alarm-sound-title {
+            font-size: 2rem;
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .alarm-sound-subtitle {
+            color: rgba(255, 255, 255, 0.8);
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        .alarm-volume-control {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .alarm-volume-slider {
+            width: 100%;
+            height: 10px;
+            -webkit-appearance: none;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            outline: none;
+        }
+
+        .alarm-volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+        }
+
+        .alarm-volume-slider::-moz-range-thumb {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            border: none;
+        }
+
+        .alarm-control-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            width: 100%;
+        }
+
+        .alarm-stop-btn {
+            background: var(--danger) !important;
+            font-size: 1.2rem !important;
+            padding: 18px 30px !important;
+        }
+
+        .alarm-test-btn {
+            background: var(--secondary) !important;
+            font-size: 1.2rem !important;
+            padding: 18px 30px !important;
+        }
+
+        .alarm-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1001;
+            display: none;
+        }
+
+        .alarm-overlay.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <!-- Emergency SOS Button -->
+    <button class="emergency-btn" onclick="triggerEmergency()">
+        <i class="fas fa-phone-alt"></i>
+    </button>
+
+    <!-- Alarm Sound Modal -->
+    <div class="alarm-overlay" id="alarmOverlay"></div>
+    <div class="alarm-sound-controls" id="alarmSoundControls">
+        <div>
+            <div class="alarm-sound-title">🔔 PERIOD ALARM</div>
+            <div class="alarm-sound-subtitle">Alarm is ringing! Click STOP to turn it off</div>
+        </div>
+        
+        <div class="alarm-volume-control">
+            <label style="color: var(--primary); font-weight: 600;">Volume Control</label>
+            <input type="range" min="0" max="100" value="80" class="alarm-volume-slider" id="alarmVolume">
+        </div>
+        
+        <div class="alarm-control-buttons">
+            <button class="alarm-stop-btn" onclick="stopAlarmSound()">
+                <i class="fas fa-stop-circle"></i> STOP ALARM
+            </button>
+            <button class="alarm-test-btn" onclick="testAlarmSound()">
+                <i class="fas fa-play-circle"></i> TEST SOUND
+            </button>
+        </div>
+        
+        <div style="text-align: center; opacity: 0.8; font-size: 0.9rem;">
+            <i class="fas fa-info-circle"></i> Automatic alarms will trigger on reminder dates
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification">
+        <i class="fas fa-info-circle" id="notificationIcon"></i>
+        <span id="notificationText"></span>
+    </div>
+
+    <!-- Password Modal for Locker -->
+    <div class="password-modal" id="passwordModal">
+        <div class="password-box">
+            <h2 style="color: var(--primary); margin-bottom: 20px;">
+                <i class="fas fa-lock"></i> Digital Locker Password
+            </h2>
+            <div class="input-group">
+                <input type="password" id="passwordInput" placeholder="Enter password">
+                <button class="password-toggle" onclick="togglePasswordVisibility('passwordInput', this)">
+                    <i class="fas fa-eye"></i>
+                </button>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px;">
+                <button onclick="unlockLocker()">
+                    <i class="fas fa-unlock"></i> Unlock
+                </button>
+                <button onclick="setNewPassword()" style="background: var(--secondary);">
+                    <i class="fas fa-key"></i> Set Password
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Secure Data Password Modal -->
+    <div class="secure-data-modal" id="secureDataModal">
+        <div class="secure-data-box">
+            <h2 style="color: var(--accent); margin-bottom: 20px;">
+                <i class="fas fa-shield-alt"></i> Secure Data Access
+            </h2>
+            <p style="margin-bottom: 20px; opacity: 0.8;" id="secureDataPrompt"></p>
+            <div class="input-group">
+                <input type="password" id="secureDataPassword" placeholder="Enter data password">
+                <button class="password-toggle" onclick="togglePasswordVisibility('secureDataPassword', this)">
+                    <i class="fas fa-eye"></i>
+                </button>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <button onclick="accessSecureData()" style="background: var(--accent);">
+                    <i class="fas fa-check"></i> Access
+                </button>
+                <button onclick="closeSecureDataModal()" style="background: rgba(255,255,255,0.1);">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Header with Back to Map Button -->
+        <header class="header">
+            <a href="#" class="back-to-map" onclick="goToSafetyMap()">
+                <i class="fas fa-arrow-left"></i> Back to Safety Map
+            </a>
+            
+            <h1><i class="fas fa-shield-alt"></i> SHEShield</h1>
+            <p style="font-size: 1.2rem; opacity: 0.9;">Women's Safety & Protection Platform</p>
+        </header>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="showTab('safety')">
+                <i class="fas fa-shield-alt"></i> Safety First
+            </button>
+            <button class="tab-btn" onclick="showTab('period')">
+                <i class="fas fa-bell"></i> Period Alarm
+            </button>
+            <button class="tab-btn" onclick="showTab('defense')">
+                <i class="fas fa-fist-raised"></i> Defense Videos
+            </button>
+            <button class="tab-btn" onclick="showTab('products')">
+                <i class="fab fa-amazon"></i> Safety Gear
+            </button>
+            <button class="tab-btn" onclick="showTab('locker')">
+                <i class="fas fa-lock"></i> Secure Locker
+            </button>
+        </div>
+
+        <!-- Safety First Tab -->
+        <section id="safety" class="tab-content active">
+            <div class="card">
+                <h2><i class="fas fa-shield-alt"></i> Women's Safety Essentials</h2>
+                
+                <div class="safety-features">
+                    <!-- Feature 1: Emergency Contacts -->
+                    <div class="feature-card" onclick="setupEmergencyContacts()">
+                        <div class="feature-icon">
+                            <i class="fas fa-address-book"></i>
+                        </div>
+                        <h3>Emergency Contacts</h3>
+                        <p style="opacity: 0.8; margin-top: 10px;">Setup quick-dial emergency numbers</p>
+                    </div>
+
+                    <!-- Feature 2: Safe Routes -->
+                    <div class="feature-card" onclick="planSafeRoute()">
+                        <div class="feature-icon">
+                            <i class="fas fa-map-marked-alt"></i>
+                        </div>
+                        <h3>Safe Route Planning</h3>
+                        <p style="opacity: 0.8; margin-top: 10px;">Plan safe travel routes</p>
+                    </div>
+
+                    <!-- Feature 3: Safety Checklist -->
+                    <div class="feature-card" onclick="showSafetyChecklist()">
+                        <div class="feature-icon">
+                            <i class="fas fa-clipboard-check"></i>
+                        </div>
+                        <h3>Safety Checklist</h3>
+                        <p style="opacity: 0.8; margin-top: 10px;">Essential safety items checklist</p>
+                    </div>
+
+                    <!-- Feature 4: Legal Rights -->
+                    <div class="feature-card" onclick="showLegalRights()">
+                        <div class="feature-icon">
+                            <i class="fas fa-balance-scale"></i>
+                        </div>
+                        <h3>Legal Rights</h3>
+                        <p style="opacity: 0.8; margin-top: 10px;">Know your legal protections</p>
+                    </div>
+
+                    <!-- Feature 5: Self Defense Tips -->
+                    <div class="feature-card" onclick="showDefenseTips()">
+                        <div class="feature-icon">
+                            <i class="fas fa-user-shield"></i>
+                        </div>
+                        <h3>Self Defense Tips</h3>
+                        <p style="opacity: 0.8; margin-top: 10px;">Basic self protection guidelines</p>
+                    </div>
+
+                    <!-- Feature 6: Support Resources -->
+                    <div class="feature-card" onclick="showSupportResources()">
+                        <div class="feature-icon">
+                            <i class="fas fa-hands-helping"></i>
+                        </div>
+                        <h3>Support Resources</h3>
+                        <p style="opacity: 0.8; margin-top: 10px;">Women's support organizations</p>
+                    </div>
+                </div>
+
+                <!-- Quick Safety Tips -->
+                <div style="margin-top: 40px; padding: 25px; background: rgba(255, 107, 139, 0.1); border-radius: 15px;">
+                    <h3 style="color: var(--primary); margin-bottom: 20px;">
+                        <i class="fas fa-lightbulb"></i> Quick Safety Tips
+                    </h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                        <div>
+                            <h4><i class="fas fa-walking"></i> When Walking</h4>
+                            <p style="opacity: 0.8; font-size: 0.95rem;">• Stay in well-lit areas<br>• Keep phone accessible<br>• Trust your instincts</p>
+                        </div>
+                        <div>
+                            <h4><i class="fas fa-car"></i> In Vehicles</h4>
+                            <p style="opacity: 0.8; font-size: 0.95rem;">• Check backseat before entering<br>• Keep doors locked<br>• Park near exits</p>
+                        </div>
+                        <div>
+                            <h4><i class="fas fa-home"></i> At Home</h4>
+                            <p style="opacity: 0.8; font-size: 0.95rem;">• Always lock doors/windows<br>• Use peephole before opening<br>• Have emergency numbers ready</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Period Alarm Tab -->
+        <section id="period" class="tab-content">
+            <div class="card period-alarm">
+                <h2><i class="fas fa-bell"></i> Simple Period Alarm</h2>
+                <p style="margin-bottom: 20px; opacity: 0.9;">Set it once, get reminders 2 days before, 1 day before, and on the day.</p>
+                
+                <div class="alarm-display">
+                    <div style="opacity: 0.8;">Next Period Expected:</div>
+                    <div class="next-period" id="nextPeriodDate">-- --- ----</div>
+                    <div class="alarm-status" id="alarmStatus">Alarm Not Set</div>
+                </div>
+
+                <div class="alarm-controls">
+                    <div class="input-group">
+                        <label><i class="fas fa-calendar-day"></i> Last Period Start</label>
+                        <input type="date" id="lastPeriod" value="">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label><i class="fas fa-history"></i> Cycle Length (Days)</label>
+                        <select id="cycleLength">
+                            <option value="28">28 days (Average)</option>
+                            <option value="26">26 days</option>
+                            <option value="27">27 days</option>
+                            <option value="29">29 days</option>
+                            <option value="30">30 days</option>
+                            <option value="31">31 days</option>
+                            <option value="32">32 days</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 30px;">
+                    <button onclick="setPeriodAlarm()">
+                        <i class="fas fa-bell"></i> Set Alarm
+                    </button>
+                    <button onclick="testAlarm()" style="background: var(--secondary);">
+                        <i class="fas fa-play"></i> Test Alarm
+                    </button>
+                    <button onclick="clearAlarm()" style="background: rgba(255,255,255,0.1);">
+                        <i class="fas fa-times"></i> Clear
+                    </button>
+                </div>
+
+                <!-- Period Status -->
+                <div class="period-status" id="periodStatus">
+                    <div class="period-card">
+                        <div class="period-icon">📅</div>
+                        <div style="font-weight: 600;">2 Days Before</div>
+                        <div id="reminder2Days" style="opacity: 0.8;">-- --- ----</div>
+                    </div>
+                    <div class="period-card">
+                        <div class="period-icon">⏰</div>
+                        <div style="font-weight: 600;">1 Day Before</div>
+                        <div id="reminder1Day" style="opacity: 0.8;">-- --- ----</div>
+                    </div>
+                    <div class="period-card">
+                        <div class="period-icon">🔔</div>
+                        <div style="font-weight: 600;">On The Day</div>
+                        <div id="reminderDay" style="opacity: 0.8;">-- --- ----</div>
+                    </div>
+                </div>
+
+                <!-- Period Tips -->
+                <div style="margin-top: 40px; padding: 25px; background: rgba(255, 107, 139, 0.1); border-radius: 15px;">
+                    <h3 style="color: var(--primary); margin-bottom: 20px;">
+                        <i class="fas fa-heart"></i> Period Health Tips
+                    </h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                        <div>
+                            <h4><i class="fas fa-utensils"></i> Nutrition</h4>
+                            <p style="opacity: 0.8; font-size: 0.95rem;">• Iron-rich foods<br>• Stay hydrated<br>• Reduce salt & caffeine</p>
+                        </div>
+                        <div>
+                            <h4><i class="fas fa-bed"></i> Self Care</h4>
+                            <p style="opacity: 0.8; font-size: 0.95rem;">• Get enough rest<br>• Gentle exercise<br>• Heat for cramps</p>
+                        </div>
+                        <div>
+                            <h4><i class="fas fa-pills"></i> Pain Management</h4>
+                            <p style="opacity: 0.8; font-size: 0.95rem;">• Over-the-counter meds<br>• Herbal teas<br>• Light massage</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Defense Videos Tab -->
+        <section id="defense" class="tab-content">
+            <div class="card">
+                <h2><i class="fas fa-fist-raised"></i> Self Defense Training</h2>
+                <p style="margin-bottom: 25px; opacity: 0.9;">Click any video to watch on YouTube. All videos work perfectly!</p>
+                
+                <div class="video-grid">
+                    <!-- Video 1 -->
+                    <div class="video-card" onclick="openVideo('b5XK8bQEoMM')">
+                        <div class="video-thumbnail">
+                            <img src="https://img.youtube.com/vi/b5XK8bQEoMM/maxresdefault.jpg" alt="Self Defense">
+                            <div class="play-btn">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <div class="video-title">Basic Self Defense Moves</div>
+                            <p style="opacity: 0.8; font-size: 0.95rem;">Essential techniques every woman should know</p>
+                        </div>
+                    </div>
+
+                    <!-- Video 2 -->
+                    <div class="video-card" onclick="openVideo('Hv0e0n65w1Y')">
+                        <div class="video-thumbnail">
+                            <img src="https://img.youtube.com/vi/Hv0e0n65w1Y/maxresdefault.jpg" alt="Escape Techniques">
+                            <div class="play-btn">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <div class="video-title">Escape from Holds</div>
+                            <p style="opacity: 0.8; font-size: 0.95rem;">Break free from wrist grabs and holds</p>
+                        </div>
+                    </div>
+
+                    <!-- Video 3 -->
+                    <div class="video-card" onclick="openVideo('IwoyN_-B8EM')">
+                        <div class="video-thumbnail">
+                            <img src="https://img.youtube.com/vi/IwoyN_-B8EM/maxresdefault.jpg" alt="Pressure Points">
+                            <div class="play-btn">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <div class="video-title">Pressure Point Defense</div>
+                            <p style="opacity: 0.8; font-size: 0.95rem;">Target vulnerable areas effectively</p>
+                        </div>
+                    </div>
+
+                    <!-- Video 4 -->
+                    <div class="video-card" onclick="openVideo('N1gK2tq5J3o')">
+                        <div class="video-thumbnail">
+                            <img src="https://img.youtube.com/vi/N1gK2tq5J3o/maxresdefault.jpg" alt="Improvised Weapons">
+                            <div class="play-btn">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <div class="video-title">Everyday Objects as Weapons</div>
+                            <p style="opacity: 0.8; font-size: 0.95rem;">Use common items for protection</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Safety Products Tab -->
+        <section id="products" class="tab-content">
+            <div class="card">
+                <h2><i class="fab fa-amazon"></i> Safety Products on Amazon</h2>
+                <p style="margin-bottom: 25px; opacity: 0.9;">Recommended safety products for women (opens Amazon in new tab)</p>
+                
+                <div class="products-grid">
+                    <!-- Product 1 -->
+                    <a href="https://www.amazon.com/s?k=pepper+spray+for+women+safety&tag=sheshield-20" target="_blank" class="product-card">
+                        <div class="product-image">
+                            <img src="https://m.media-amazon.com/images/I/71r-+m8ty5L._AC_SL1500_.jpg" alt="Pepper Spray">
+                        </div>
+                        <div class="product-info">
+                            <div class="product-title">Pepper Spray for Women</div>
+                            <div class="product-price">$24.99</div>
+                            <p style="opacity: 0.8; font-size: 0.9rem;">Personal safety protection</p>
+                        </div>
+                    </a>
+
+                    <!-- Product 2 -->
+                    <a href="https://www.amazon.com/s?k=personal+safety+alarm+130db&tag=sheshield-20" target="_blank" class="product-card">
+                        <div class="product-image">
+                            <img src="https://m.media-amazon.com/images/I/71nY7WjWQzL._AC_SL1500_.jpg" alt="Personal Alarm">
+                        </div>
+                        <div class="product-info">
+                            <div class="product-title">Personal Safety Alarm</div>
+                            <div class="product-price">$19.99</div>
+                            <p style="opacity: 0.8; font-size: 0.9rem;">130dB loud alarm with LED</p>
+                        </div>
+                    </a>
+
+                    <!-- Product 3 -->
+                    <a href="https://www.amazon.com/s?k=safety+bracelet+gps+sos&tag=sheshield-20" target="_blank" class="product-card">
+                        <div class="product-image">
+                            <img src="https://m.media-amazon.com/images/I/71f0pMTwLJL._AC_SL1500_.jpg" alt="Safety Bracelet">
+                        </div>
+                        <div class="product-info">
+                            <div class="product-title">Smart Safety Bracelet</div>
+                            <div class="product-price">$49.99</div>
+                            <p style="opacity: 0.8; font-size: 0.9rem;">GPS tracking & SOS alerts</p>
+                        </div>
+                    </a>
+
+                    <!-- Product 4 -->
+                    <a href="https://www.amazon.com/s?k=door+stop+alarm+travel+safety&tag=sheshield-20" target="_blank" class="product-card">
+                        <div class="product-image">
+                            <img src="https://m.media-amazon.com/images/I/71BpDkjK8BL._AC_SL1500_.jpg" alt="Door Alarm">
+                        </div>
+                        <div class="product-info">
+                            <div class="product-title">Travel Door Alarm</div>
+                            <div class="product-price">$29.99</div>
+                            <p style="opacity: 0.8; font-size: 0.9rem;">Hotel room security device</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Digital Locker Tab - UPDATED WITHOUT AI CHATBOT -->
+        <section id="locker" class="tab-content">
+            <div class="card">
+                <h2><i class="fas fa-lock"></i> Encrypted Digital Locker</h2>
+                <p style="margin-bottom: 25px; opacity: 0.9;">
+                    <i class="fas fa-shield-alt"></i> Store important documents, contacts, and notes securely with encryption
+                </p>
+                
+                <!-- Single Column Layout -->
+                <div class="locker-container">
+                    <!-- File Storage Section -->
+                    <div class="locker-section">
+                        <h3><i class="fas fa-folder"></i> Secure File Storage</h3>
+                        
+                        <!-- Password Protection Options -->
+                        <div class="secure-data-options">
+                            <div class="secure-data-item">
+                                <div class="secure-toggle">
+                                    <i class="fas fa-file-pdf" style="color: var(--accent);"></i>
+                                    <span>Protect Files with Password</span>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="fileProtectionToggle" checked onchange="toggleFileProtection()">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            
+                            <div class="secure-data-item">
+                                <div class="secure-toggle">
+                                    <i class="fas fa-address-book" style="color: var(--primary);"></i>
+                                    <span>Encrypt Contacts</span>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="contactProtectionToggle" checked onchange="toggleContactProtection()">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            
+                            <div class="secure-data-item">
+                                <div class="secure-toggle">
+                                    <i class="fas fa-sticky-note" style="color: var(--warning);"></i>
+                                    <span>Secure Notes Encryption</span>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="notesProtectionToggle" checked onchange="toggleNotesProtection()">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <!-- Upload Area -->
+                        <div class="locker-upload" onclick="document.getElementById('fileInput').click()">
+                            <i class="fas fa-cloud-upload-alt" style="font-size: 2.5rem; color: var(--accent); margin-bottom: 15px;"></i>
+                            <h4>Upload Files Securely</h4>
+                            <p style="opacity: 0.8; margin-top: 10px;">Drag & drop or click to upload</p>
+                            <input type="file" id="fileInput" multiple style="display: none;" onchange="uploadFiles(event)">
+                        </div>
+
+                        <!-- Stored Files -->
+                        <div id="storedFiles">
+                            <!-- Files will appear here -->
+                        </div>
+
+                        <!-- Emergency Contacts -->
+                        <div style="margin-top: 30px; padding: 20px; background: rgba(255, 107, 139, 0.1); border-radius: 10px;">
+                            <h4 style="color: var(--primary); margin-bottom: 15px;">
+                                <i class="fas fa-address-book"></i> Emergency Contacts
+                            </h4>
+                            <div style="display: grid; gap: 15px;">
+                                <div class="input-group">
+                                    <input type="text" id="contact1Name" placeholder="Emergency Contact Name">
+                                </div>
+                                <div class="input-group">
+                                    <input type="tel" id="contact1Phone" placeholder="Phone Number">
+                                    <button class="password-toggle" onclick="togglePasswordVisibility('contact1Phone', this)">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <button onclick="saveEncryptedContacts()" style="margin-top: 15px;">
+                                <i class="fas fa-lock"></i> Encrypt & Save
+                            </button>
+                        </div>
+
+                        <!-- Secure Notes -->
+                        <div style="margin-top: 20px;">
+                            <h4 style="color: var(--accent); margin-bottom: 10px;">
+                                <i class="fas fa-sticky-note"></i> Secure Notes
+                            </h4>
+                            <textarea id="secureNotes" placeholder="Type your private notes here..." rows="4"></textarea>
+                            <button onclick="saveEncryptedNotes()" style="margin-top: 10px;">
+                                <i class="fas fa-lock"></i> Encrypt & Save Notes
+                            </button>
+                        </div>
+
+                        <!-- AI Chatbot Button -->
+                        <button class="ai-chatbot-btn" onclick="openChatbotPage()">
+                            <i class="fas fa-robot"></i> Open AI Chatbot Assistant
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <button onclick="goToSafetyMap()" style="background: var(--secondary);">
+                <i class="fas fa-map-marked-alt"></i> View Safety Map
+            </button>
+            <button onclick="showEmergencyGuide()" style="background: var(--danger);">
+                <i class="fas fa-book-medical"></i> Emergency Guide
+            </button>
+            <button onclick="showHelp()" style="background: var(--accent);">
+                <i class="fas fa-question-circle"></i> Get Help
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Enhanced State Management
+        let periodAlarm = {
+            lastPeriod: '',
+            cycleLength: 28,
+            nextPeriod: '',
+            reminders: {},
+            isSet: false
+        };
+
+        let digitalLocker = {
+            password: localStorage.getItem('locker_password'),
+            isUnlocked: false,
+            files: JSON.parse(localStorage.getItem('locker_files') || '[]'),
+            contacts: JSON.parse(localStorage.getItem('locker_contacts') || '{}'),
+            notes: localStorage.getItem('locker_notes') || '',
+            settings: {
+                fileProtection: localStorage.getItem('file_protection') !== 'false',
+                contactProtection: localStorage.getItem('contact_protection') !== 'false',
+                notesProtection: localStorage.getItem('notes_protection') !== 'false'
+            },
+            dataPasswords: JSON.parse(localStorage.getItem('data_passwords') || '{}')
+        };
+
+        let currentSecureDataAccess = null;
+        let alarmAudio = null;
+        let isAlarmPlaying = false;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('SHEShield Enhanced initialized');
+            
+            // Load saved period alarm
+            const savedAlarm = localStorage.getItem('period_alarm');
+            if (savedAlarm) {
+                periodAlarm = JSON.parse(savedAlarm);
+                if (periodAlarm.isSet) {
+                    document.getElementById('lastPeriod').value = periodAlarm.lastPeriod;
+                    document.getElementById('cycleLength').value = periodAlarm.cycleLength;
+                    updatePeriodAlarmDisplay();
+                    
+                    // Check if alarm should trigger today
+                    checkAlarmTrigger();
+                }
+            }
+            
+            // Check locker password
+            if (digitalLocker.password) {
+                document.getElementById('passwordModal').style.display = 'flex';
+            }
+            
+            // Update toggle switches based on settings
+            document.getElementById('fileProtectionToggle').checked = digitalLocker.settings.fileProtection;
+            document.getElementById('contactProtectionToggle').checked = digitalLocker.settings.contactProtection;
+            document.getElementById('notesProtectionToggle').checked = digitalLocker.settings.notesProtection;
+            
+            // Set default date for period alarm
+            if (!periodAlarm.lastPeriod) {
+                const today = new Date();
+                const lastMonth = new Date(today);
+                lastMonth.setMonth(today.getMonth() - 1);
+                document.getElementById('lastPeriod').value = lastMonth.toISOString().split('T')[0];
+            }
+            
+            // Show welcome
+            setTimeout(() => {
+                showNotification('SHEShield Enhanced loaded! Your safety and emotional wellbeing are our priority.', 'success');
+            }, 1000);
+        });
+
+        // OPEN CHATBOT PAGE
+        function openChatbotPage() {
+            window.open('chatbot.html', '_blank');
+            showNotification('Opening AI Chatbot Assistant...', 'info');
+        }
+
+        // PASSWORD VISIBILITY TOGGLE
+        function togglePasswordVisibility(inputId, button) {
+            const input = document.getElementById(inputId);
+            const icon = button.querySelector('i');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'fas fa-eye-slash';
+            } else {
+                input.type = 'password';
+                icon.className = 'fas fa-eye';
+            }
+        }
+
+        // ENHANCED PERIOD ALARM WITH SOUND
+        function setPeriodAlarm() {
+            periodAlarm.lastPeriod = document.getElementById('lastPeriod').value;
+            periodAlarm.cycleLength = parseInt(document.getElementById('cycleLength').value);
+            
+            if (!periodAlarm.lastPeriod) {
+                showNotification('Please select last period date', 'error');
+                return;
+            }
+            
+            const lastDate = new Date(periodAlarm.lastPeriod);
+            const nextDate = new Date(lastDate);
+            nextDate.setDate(nextDate.getDate() + periodAlarm.cycleLength);
+            
+            periodAlarm.nextPeriod = nextDate.toISOString().split('T')[0];
+            periodAlarm.isSet = true;
+            
+            // Calculate reminders
+            const reminder2Days = new Date(nextDate);
+            reminder2Days.setDate(reminder2Days.getDate() - 2);
+            
+            const reminder1Day = new Date(nextDate);
+            reminder1Day.setDate(reminder1Day.getDate() - 1);
+            
+            periodAlarm.reminders = {
+                twoDaysBefore: reminder2Days.toISOString().split('T')[0],
+                oneDayBefore: reminder1Day.toISOString().split('T')[0],
+                onTheDay: periodAlarm.nextPeriod
+            };
+            
+            updatePeriodAlarmDisplay();
+            localStorage.setItem('period_alarm', JSON.stringify(periodAlarm));
+            
+            showNotification('Period alarm set! You\'ll get reminders 2 days before, 1 day before, and on the day.', 'success');
+        }
+
+        function testAlarm() {
+            if (!periodAlarm.isSet) {
+                // If no alarm set, show the alarm controls to set one
+                showNotification('Please set the alarm first', 'error');
+                return;
+            }
+            
+            // Show alarm sound controls
+            showAlarmSoundControls();
+            
+            // Start alarm sound
+            playAlarmSound();
+        }
+
+        function playAlarmSound() {
+            if (isAlarmPlaying) return;
+            
+            isAlarmPlaying = true;
+            
+            // Create alarm sound using Web Audio API for better sound quality
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                // Configure alarm sound
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+                oscillator.frequency.setValueAtTime(1200, audioContext.currentTime + 0.5);
+                
+                // Configure volume
+                const volume = document.getElementById('alarmVolume').value / 100;
+                gainNode.gain.setValueAtTime(volume, audioContext.currentTime);
+                
+                // Start and loop
+                oscillator.start();
+                
+                // Store for stopping
+                alarmAudio = {
+                    context: audioContext,
+                    oscillator: oscillator,
+                    gainNode: gainNode
+                };
+                
+                // Create pulsing effect
+                let time = audioContext.currentTime;
+                const interval = 1; // seconds
+                
+                function pulse() {
+                    if (!isAlarmPlaying) return;
+                    
+                    // Frequency sweep
+                    oscillator.frequency.setValueAtTime(800, time);
+                    oscillator.frequency.setValueAtTime(1200, time + 0.5);
+                    
+                    // Volume pulse
+                    gainNode.gain.setValueAtTime(0, time);
+                    gainNode.gain.linearRampToValueAtTime(volume, time + 0.1);
+                    gainNode.gain.setValueAtTime(volume, time + 0.8);
+                    gainNode.gain.linearRampToValueAtTime(0, time + 0.9);
+                    
+                    time += interval;
+                    setTimeout(pulse, interval * 1000);
+                }
+                
+                pulse();
+                
+            } catch (error) {
+                // Fallback to simple beep if Web Audio API fails
+                console.log('Using fallback alarm sound');
+                alarmAudio = setInterval(() => {
+                    if (!isAlarmPlaying) {
+                        clearInterval(alarmAudio);
+                        return;
+                    }
+                    const beep = new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEAQB8AAEAfAAABAAgAZGF0YQ');
+                    const volume = document.getElementById('alarmVolume').value / 100;
+                    beep.volume = volume;
+                    beep.play().catch(e => console.log('Audio play failed:', e));
+                }, 1000);
+            }
+            
+            showNotification('🔔 Period alarm is ringing! Click STOP in the alarm controls.', 'info');
+        }
+
+        function stopAlarmSound() {
+            isAlarmPlaying = false;
+            
+            if (alarmAudio) {
+                if (alarmAudio.context) {
+                    // Web Audio API cleanup
+                    alarmAudio.oscillator.stop();
+                    alarmAudio.context.close();
+                } else if (typeof alarmAudio === 'number') {
+                    // Interval cleanup
+                    clearInterval(alarmAudio);
+                }
+                alarmAudio = null;
+            }
+            
+            hideAlarmSoundControls();
+            showNotification('Alarm stopped', 'success');
+        }
+
+        function testAlarmSound() {
+            if (isAlarmPlaying) {
+                stopAlarmSound();
+                setTimeout(() => {
+                    playAlarmSound();
+                }, 500);
+            } else {
+                playAlarmSound();
+            }
+        }
+
+        function showAlarmSoundControls() {
+            document.getElementById('alarmOverlay').classList.add('active');
+            document.getElementById('alarmSoundControls').classList.add('active');
+        }
+
+        function hideAlarmSoundControls() {
+            document.getElementById('alarmOverlay').classList.remove('active');
+            document.getElementById('alarmSoundControls').classList.remove('active');
+        }
+
+        function clearAlarm() {
+            periodAlarm.isSet = false;
+            periodAlarm.lastPeriod = '';
+            periodAlarm.nextPeriod = '';
+            periodAlarm.reminders = {};
+            
+            document.getElementById('lastPeriod').value = '';
+            document.getElementById('alarmStatus').textContent = 'Alarm Not Set';
+            document.getElementById('alarmStatus').classList.remove('active');
+            document.getElementById('nextPeriodDate').textContent = '-- --- ----';
+            
+            // Clear reminder displays
+            document.getElementById('reminder2Days').textContent = '-- --- ----';
+            document.getElementById('reminder1Day').textContent = '-- --- ----';
+            document.getElementById('reminderDay').textContent = '-- --- ----';
+            
+            localStorage.removeItem('period_alarm');
+            showNotification('Period alarm cleared', 'success');
+            
+            // Stop any playing alarm
+            if (isAlarmPlaying) {
+                stopAlarmSound();
+            }
+        }
+
+        function updatePeriodAlarmDisplay() {
+            if (!periodAlarm.isSet || !periodAlarm.nextPeriod) return;
+            
+            const nextDate = new Date(periodAlarm.nextPeriod);
+            const today = new Date();
+            const daysUntil = Math.ceil((nextDate - today) / (1000 * 60 * 60 * 24));
+            
+            document.getElementById('nextPeriodDate').textContent = nextDate.toDateString();
+            
+            // Update reminder displays
+            if (periodAlarm.reminders.twoDaysBefore) {
+                document.getElementById('reminder2Days').textContent = new Date(periodAlarm.reminders.twoDaysBefore).toDateString();
+            }
+            if (periodAlarm.reminders.oneDayBefore) {
+                document.getElementById('reminder1Day').textContent = new Date(periodAlarm.reminders.oneDayBefore).toDateString();
+            }
+            if (periodAlarm.reminders.onTheDay) {
+                document.getElementById('reminderDay').textContent = new Date(periodAlarm.reminders.onTheDay).toDateString();
+            }
+            
+            // Update status
+            if (daysUntil <= 2 && daysUntil > 0) {
+                document.getElementById('alarmStatus').textContent = `Reminder in ${daysUntil} day${daysUntil > 1 ? 's' : ''}`;
+                document.getElementById('alarmStatus').classList.add('active');
+                
+                // Highlight appropriate reminder card
+                const periodCards = document.querySelectorAll('.period-card');
+                periodCards.forEach(card => card.classList.remove('active'));
+                
+                if (daysUntil === 2) {
+                    periodCards[0].classList.add('active');
+                } else if (daysUntil === 1) {
+                    periodCards[1].classList.add('active');
+                }
+            } else if (daysUntil <= 0) {
+                document.getElementById('alarmStatus').textContent = 'PERIOD TODAY!';
+                document.getElementById('alarmStatus').classList.add('active');
+                
+                // Highlight day card
+                const periodCards = document.querySelectorAll('.period-card');
+                periodCards.forEach(card => card.classList.remove('active'));
+                periodCards[2].classList.add('active');
+            } else {
+                document.getElementById('alarmStatus').textContent = 'Alarm Set';
+                document.getElementById('alarmStatus').classList.remove('active');
+                
+                // Remove highlights
+                const periodCards = document.querySelectorAll('.period-card');
+                periodCards.forEach(card => card.classList.remove('active'));
+            }
+        }
+
+        function checkAlarmTrigger() {
+            if (!periodAlarm.isSet) return;
+            
+            const today = new Date().toISOString().split('T')[0];
+            const alarmTriggeredToday = localStorage.getItem('alarm_triggered_' + today);
+            
+            // Check if alarm should trigger today and hasn't been triggered yet
+            if (!alarmTriggeredToday && (
+                periodAlarm.reminders.twoDaysBefore === today ||
+                periodAlarm.reminders.oneDayBefore === today ||
+                periodAlarm.reminders.onTheDay === today
+            )) {
+                // Mark as triggered for today
+                localStorage.setItem('alarm_triggered_' + today, 'true');
+                
+                // Determine message based on which reminder day
+                let message = '';
+                if (periodAlarm.reminders.twoDaysBefore === today) {
+                    message = '🔔 Period Reminder: Your period is expected in 2 days. Time to prepare!';
+                } else if (periodAlarm.reminders.oneDayBefore === today) {
+                    message = '🔔 Period Reminder: Your period is expected tomorrow. Make sure you have supplies ready!';
+                } else if (periodAlarm.reminders.onTheDay === today) {
+                    message = '🔔 Period Alert: Your period is expected today. Take care of yourself!';
+                }
+                
+                // Show notification
+                showNotification(message, 'info');
+                
+                // Auto-play alarm sound for today's reminder
+                setTimeout(() => {
+                    showAlarmSoundControls();
+                    playAlarmSound();
+                    
+                    // Auto-stop after 30 seconds if user doesn't interact
+                    setTimeout(() => {
+                        if (isAlarmPlaying) {
+                            stopAlarmSound();
+                            showNotification('Alarm auto-stopped after 30 seconds', 'info');
+                        }
+                    }, 30000);
+                }, 2000);
+            }
+        }
+
+        // SECURE LOCKER FUNCTIONS
+        function toggleFileProtection() {
+            digitalLocker.settings.fileProtection = !digitalLocker.settings.fileProtection;
+            localStorage.setItem('file_protection', digitalLocker.settings.fileProtection);
+            showNotification(`File protection ${digitalLocker.settings.fileProtection ? 'enabled' : 'disabled'}`, 'info');
+        }
+
+        function toggleContactProtection() {
+            digitalLocker.settings.contactProtection = !digitalLocker.settings.contactProtection;
+            localStorage.setItem('contact_protection', digitalLocker.settings.contactProtection);
+            showNotification(`Contact encryption ${digitalLocker.settings.contactProtection ? 'enabled' : 'disabled'}`, 'info');
+        }
+
+        function toggleNotesProtection() {
+            digitalLocker.settings.notesProtection = !digitalLocker.settings.notesProtection;
+            localStorage.setItem('notes_protection', digitalLocker.settings.notesProtection);
+            showNotification(`Notes encryption ${digitalLocker.settings.notesProtection ? 'enabled' : 'disabled'}`, 'info');
+        }
+
+        function promptForDataPassword(action, dataType, callback) {
+            if (!digitalLocker.settings[`${dataType}Protection`]) {
+                callback();
+                return;
+            }
+            
+            currentSecureDataAccess = { action, dataType, callback };
+            document.getElementById('secureDataPrompt').textContent = 
+                `Enter password to ${action} ${dataType === 'file' ? 'files' : dataType}`;
+            document.getElementById('secureDataPassword').value = '';
+            document.getElementById('secureDataModal').style.display = 'flex';
+        }
+
+        function accessSecureData() {
+            const password = document.getElementById('secureDataPassword').value;
+            const expectedPassword = digitalLocker.dataPasswords[currentSecureDataAccess.dataType];
+            
+            if (!expectedPassword || password === expectedPassword) {
+                closeSecureDataModal();
+                if (currentSecureDataAccess.callback) {
+                    currentSecureDataAccess.callback();
+                }
+            } else {
+                showNotification('Incorrect password!', 'error');
+            }
+        }
+
+        function closeSecureDataModal() {
+            document.getElementById('secureDataModal').style.display = 'none';
+            currentSecureDataAccess = null;
+        }
+
+        // Enhanced file upload with password protection
+        function uploadFiles(event) {
+            promptForDataPassword('upload', 'file', function() {
+                const files = event.target.files;
+                if (!files.length) return;
+                
+                Array.from(files).forEach(file => {
+                    const fileData = {
+                        id: Date.now() + Math.random(),
+                        name: file.name,
+                        size: formatFileSize(file.size),
+                        type: file.type,
+                        date: new Date().toLocaleDateString(),
+                        protected: digitalLocker.settings.fileProtection
+                    };
+                    
+                    digitalLocker.files.push(fileData);
+                    
+                    localStorage.setItem('locker_files', JSON.stringify(digitalLocker.files));
+                    showNotification(`${file.name} uploaded securely`, 'success');
+                    loadLockerFiles();
+                });
+            });
+        }
+
+        function downloadFile(fileId) {
+            promptForDataPassword('download', 'file', function() {
+                const file = digitalLocker.files.find(f => f.id === fileId);
+                if (file) {
+                    showNotification(`Downloading ${file.name}`, 'success');
+                    // Simulate download
+                    alert(`File "${file.name}" would be downloaded with secure encryption.`);
+                }
+            });
+        }
+
+        function loadLockerFiles() {
+            const container = document.getElementById('storedFiles');
+            if (!container) return;
+            
+            if (digitalLocker.files.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px; opacity: 0.7;">
+                        <i class="fas fa-box-open" style="font-size: 2rem; color: var(--accent); margin-bottom: 15px;"></i>
+                        <h4>No files stored yet</h4>
+                        <p>Click above to upload files</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '<div class="files-grid">';
+            digitalLocker.files.forEach(file => {
+                html += `
+                    <div class="file-card">
+                        ${file.protected ? '<div class="file-protected"><i class="fas fa-lock"></i> Protected</div>' : ''}
+                        <div class="file-icon">
+                            <i class="fas fa-file-${getFileIcon(file.type)}"></i>
+                        </div>
+                        <h4 style="font-size: 0.95rem;">${file.name}</h4>
+                        <p style="opacity: 0.8; font-size: 0.85rem;">${file.size}</p>
+                        <p style="opacity: 0.6; font-size: 0.8rem;">${file.date}</p>
+                        <button onclick="downloadFile(${file.id})" style="margin-top: 10px; padding: 8px 15px; background: var(--accent); border: none; border-radius: 5px; color: white; cursor: pointer; font-size: 0.85rem;">
+                            <i class="fas fa-download"></i> Download
+                        </button>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        function saveEncryptedContacts() {
+            promptForDataPassword('save', 'contact', function() {
+                const contact1 = {
+                    name: document.getElementById('contact1Name').value,
+                    phone: document.getElementById('contact1Phone').value
+                };
+                
+                // Encrypt if protection enabled
+                if (digitalLocker.settings.contactProtection) {
+                    const encryptionKey = digitalLocker.dataPasswords.contact || digitalLocker.password;
+                    if (encryptionKey) {
+                        contact1.name = CryptoJS.AES.encrypt(contact1.name, encryptionKey).toString();
+                        contact1.phone = CryptoJS.AES.encrypt(contact1.phone, encryptionKey).toString();
+                    }
+                }
+                
+                digitalLocker.contacts = { contact1 };
+                localStorage.setItem('locker_contacts', JSON.stringify(digitalLocker.contacts));
+                showNotification('Contacts saved with encryption!', 'success');
+            });
+        }
+
+        function saveEncryptedNotes() {
+            promptForDataPassword('save', 'notes', function() {
+                const notes = document.getElementById('secureNotes').value;
+                if (notes.trim()) {
+                    // Encrypt if protection enabled
+                    let encryptedNotes = notes;
+                    if (digitalLocker.settings.notesProtection) {
+                        const encryptionKey = digitalLocker.dataPasswords.notes || digitalLocker.password;
+                        if (encryptionKey) {
+                            encryptedNotes = CryptoJS.AES.encrypt(notes, encryptionKey).toString();
+                        }
+                    }
+                    
+                    digitalLocker.notes = encryptedNotes;
+                    localStorage.setItem('locker_notes', digitalLocker.notes);
+                    showNotification('Notes saved securely!', 'success');
+                }
+            });
+        }
+
+        function getFileIcon(fileType) {
+            if (fileType.includes('image')) return 'image';
+            if (fileType.includes('pdf')) return 'pdf';
+            if (fileType.includes('word')) return 'word';
+            if (fileType.includes('excel')) return 'excel';
+            if (fileType.includes('zip')) return 'archive';
+            return 'alt';
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' Bytes';
+            if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / 1048576).toFixed(1) + ' MB';
+        }
+
+        // Navigation Functions
+        function goToSafetyMap() {
+            showNotification('Opening Safety Map...', 'info');
+            setTimeout(() => {
+                alert('Safety Map Feature:\n\nThis would show:\n• Safe zones in your area\n• Emergency services locations\n• Dangerous areas to avoid\n• Safe routes home\n• Real-time safety alerts\n\n(For demo, staying on this page)');
+            }, 500);
+        }
+
+        function showEmergencyGuide() {
+            const guide = `
+                🚨 ENHANCED EMERGENCY GUIDE 🚨
+                
+                IMMEDIATE ACTIONS:
+                
+                1. **If in immediate danger:**
+                   • Press the red emergency button
+                   • Shout "FIRE!" (gets more attention)
+                   • Run to nearest crowded/public place
+                   • Use your personal safety devices
+                
+                2. **Emergency Numbers:**
+                   • Police: 911/100
+                   • Women's Helpline: 1091
+                   • Domestic Violence: 1-800-799-7233
+                   • National Emergency: 112
+                
+                3. **When calling for help:**
+                   • State your location clearly
+                   • Describe the emergency
+                   • Mention any weapons involved
+                   • Stay on the line until help arrives
+                
+                4. **After ensuring safety:**
+                   • Go to a safe, public location
+                   • Contact your emergency contacts
+                   • Seek medical help if needed
+                   • Document everything for authorities
+                
+                Remember: Your safety comes first! Trust your instincts.
+            `;
+            alert(guide);
+        }
+
+        function showHelp() {
+            window.open('https://www.womenshelters.org/', '_blank');
+            showNotification('Opening women\'s support resources...', 'info');
+        }
+
+        // Tab Navigation
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active class from buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active to clicked button
+            event.currentTarget.classList.add('active');
+            
+            // Check locker access
+            if (tabName === 'locker' && digitalLocker.password && !digitalLocker.isUnlocked) {
+                document.getElementById('passwordModal').style.display = 'flex';
+                return false;
+            }
+            
+            // Load locker files if unlocked
+            if (tabName === 'locker' && digitalLocker.isUnlocked) {
+                loadLockerFiles();
+            }
+            
+            // Update period alarm display if on period tab
+            if (tabName === 'period' && periodAlarm.isSet) {
+                updatePeriodAlarmDisplay();
+            }
+        }
+
+        // DIGITAL LOCKER FUNCTIONS
+        function setNewPassword() {
+            const password = document.getElementById('passwordInput').value;
+            if (password.length < 6) {
+                showNotification('Password must be at least 6 characters', 'error');
+                return;
+            }
+            
+            digitalLocker.password = password;
+            digitalLocker.isUnlocked = true;
+            localStorage.setItem('locker_password', password);
+            
+            document.getElementById('passwordModal').style.display = 'none';
+            showNotification('Locker password set and unlocked! Advanced security activated.', 'success');
+            loadLockerFiles();
+        }
+
+        function unlockLocker() {
+            const password = document.getElementById('passwordInput').value;
+            
+            if (password === digitalLocker.password) {
+                digitalLocker.isUnlocked = true;
+                document.getElementById('passwordModal').style.display = 'none';
+                showNotification('Locker unlocked! Secure access granted.', 'success');
+                loadLockerFiles();
+            } else {
+                showNotification('Wrong password! Access denied.', 'error');
+            }
+        }
+
+        // NOTIFICATION SYSTEM
+        function showNotification(message, type = 'info') {
+            const notification = document.getElementById('notification');
+            const text = document.getElementById('notificationText');
+            const icon = document.getElementById('notificationIcon');
+            
+            text.textContent = message;
+            
+            icon.className = type === 'success' ? 'fas fa-check-circle' :
+                            type === 'error' ? 'fas fa-exclamation-circle' :
+                            'fas fa-info-circle';
+            
+            notification.className = `notification ${type} show`;
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 4000);
+        }
+
+        // VIDEO FUNCTIONS
+        function openVideo(videoId) {
+            window.open(`https://www.youtube.com/watch?v=${videoId}`, '_blank');
+            showNotification('Opening YouTube video...', 'info');
+        }
+
+        function triggerEmergency() {
+            const emergencyContacts = ['911', '100', '112'];
+            const randomContact = emergencyContacts[Math.floor(Math.random() * emergencyContacts.length)];
+            
+            alert(`🚨 EMERGENCY ALERT! 🚨\n\nSimulating call to emergency services: ${randomContact}\n\nYour location has been shared with emergency contacts.\nStay safe and find a public place immediately.`);
+            
+            // Simulate vibration if supported
+            if (navigator.vibrate) {
+                navigator.vibrate([200, 100, 200, 100, 200, 100, 500]);
+            }
+        }
+
+        // Make functions available globally
+        window.showTab = showTab;
+        window.goToSafetyMap = goToSafetyMap;
+        window.showEmergencyGuide = showEmergencyGuide;
+        window.showHelp = showHelp;
+        window.setPeriodAlarm = setPeriodAlarm;
+        window.testAlarm = testAlarm;
+        window.clearAlarm = clearAlarm;
+        window.openVideo = openVideo;
+        window.triggerEmergency = triggerEmergency;
+        window.setNewPassword = setNewPassword;
+        window.unlockLocker = unlockLocker;
+        window.uploadFiles = uploadFiles;
+        window.downloadFile = downloadFile;
+        window.saveEncryptedContacts = saveEncryptedContacts;
+        window.saveEncryptedNotes = saveEncryptedNotes;
+        window.toggleFileProtection = toggleFileProtection;
+        window.toggleContactProtection = toggleContactProtection;
+        window.toggleNotesProtection = toggleNotesProtection;
+        window.accessSecureData = accessSecureData;
+        window.closeSecureDataModal = closeSecureDataModal;
+        window.togglePasswordVisibility = togglePasswordVisibility;
+        window.playAlarmSound = playAlarmSound;
+        window.stopAlarmSound = stopAlarmSound;
+        window.testAlarmSound = testAlarmSound;
+        window.openChatbotPage = openChatbotPage;
+
+        // Safety feature functions
+        window.setupEmergencyContacts = function() {
+            alert('Emergency Contacts Setup:\n\n1. Add trusted family/friends\n2. Add local police station\n3. Add women\'s helpline\n4. Add medical emergency\n\nYou can save these in the Digital Locker!');
+        };
+
+        window.planSafeRoute = function() {
+            alert('Safe Route Planning:\n\n1. Use well-lit streets\n2. Avoid isolated areas\n3. Plan stops at safe locations\n4. Share route with trusted contacts\n5. Have backup routes ready');
+        };
+
+        window.showSafetyChecklist = function() {
+            alert('Safety Checklist:\n\n✓ Personal alarm\n✓ Pepper spray (if legal)\n✓ Fully charged phone\n✓ Emergency numbers saved\n✓ Share location with someone\n✓ Self-defense knowledge\n✓ Trusted taxi service numbers');
+        };
+
+        window.showLegalRights = function() {
+            alert('Women\'s Legal Rights:\n\n• Right to safety and security\n• Protection against harassment\n• Workplace equality rights\n• Domestic violence protection\n• Right to privacy\n• Consent laws\n• Cyber crime protection');
+        };
+
+        window.showDefenseTips = function() {
+            alert('Self Defense Tips:\n\n• Target eyes, nose, throat, groin\n• Use loud, sharp shouts ("FIRE!")\n• Use everyday objects as weapons\n• Create distance and escape\n• Practice situational awareness\n• Take self-defense classes');
+        };
+
+        window.showSupportResources = function() {
+            window.open('https://www.womenshelters.org/', '_blank');
+            showNotification('Opening women\'s support resources...', 'info');
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,1718 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Safety Intelligence Hub</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Add Leaflet CSS for maps -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: auto;
+      background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
+      position: relative;
+    }
+
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* Color changing overlay effect */
+    .color-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(45deg, rgba(255,0,150,0.3), rgba(0,204,255,0.3));
+      mix-blend-mode: overlay;
+      animation: colorShift 8s ease-in-out infinite;
+      z-index: 1;
+    }
+
+    @keyframes colorShift {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 0.6; }
+    }
+
+    /* Particles container */
+    #particles-js {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+    }
+
+    /* =================== Form Styles =================== */
+    .form-container {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+      width: 90%;
+      max-width: 500px;
+      z-index: 20;
+      position: relative;
+      animation: floatForm 3s ease-in-out infinite alternate;
+      border: 1px solid rgba(255,255,255,0.2);
+      backdrop-filter: blur(10px);
+      margin: 20px;
+    }
+
+    @keyframes floatForm {
+      0% { transform: translateY(0px) scale(1); }
+      100% { transform: translateY(-10px) scale(1.02); }
+    }
+
+    .form-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .form-header h1 {
+      color: #333;
+      margin-bottom: 10px;
+      font-weight: 700;
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-size: 2.5rem;
+    }
+
+    .form-header p {
+      color: #666;
+      font-size: 14px;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .form-row div {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    label {
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #555;
+      font-size: 14px;
+    }
+
+    input, textarea {
+      padding: 12px 15px;
+      font-size: 14px;
+      border-radius: 10px;
+      border: 2px solid #e1e5e9;
+      transition: all 0.3s ease;
+      background-color: rgba(255,255,255,0.9);
+    }
+
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      background-color: #fff;
+      transform: translateY(-2px);
+    }
+
+    button {
+      padding: 14px;
+      font-size: 16px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      color: white;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      width: 100%;
+      margin-top: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+    }
+
+    button:active {
+      transform: translateY(-1px);
+    }
+
+    .form-footer {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 14px;
+      color: #666;
+    }
+
+    .form-footer a {
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.3s;
+    }
+
+    .form-footer a:hover {
+      color: #764ba2;
+      text-decoration: underline;
+    }
+
+    @media (max-width: 600px) {
+      .form-row {
+        flex-direction: column;
+        gap: 0;
+      }
+      
+      .form-row div {
+        margin-bottom: 15px;
+      }
+      
+      .form-container {
+        padding: 25px;
+      }
+    }
+
+    /* Login form specific styles */
+    .login-form .form-row {
+      flex-direction: column;
+      gap: 0;
+    }
+    
+    .login-form .form-row div {
+      margin-bottom: 15px;
+    }
+    
+    /* =================== Awareness Page Styles =================== */
+    .awareness-container {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 80px 20px;
+      min-height: 100vh;
+      width: 100%;
+      z-index: 30;
+      position: relative;
+      overflow-x: hidden;
+      text-align: center;
+    }
+
+    /* =================== Fade-in Animations =================== */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px);}
+      to { opacity: 1; transform: translateY(0);}
+    }
+
+    .fade-in {
+      opacity: 0;
+      animation: fadeInUp 1.1s forwards;
+    }
+
+    .fade-delay-1 { animation-delay: 0.2s; }
+    .fade-delay-2 { animation-delay: 0.5s; }
+    .fade-delay-3 { animation-delay: 0.8s; }
+    .fade-delay-4 { animation-delay: 1.1s; }
+
+    /* =================== Heading & Text =================== */
+    .awareness-container h1 {
+      font-size: 4rem;
+      color: #ffffff;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+      background: linear-gradient(45deg, #fff, #f0f0f0);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .awareness-container p {
+      font-size: 1.5rem;
+      color: rgba(255,255,255,0.9);
+      max-width: 600px;
+      margin: 0 auto 40px auto;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+    }
+
+    /* =================== Safety Buttons =================== */
+    .safety-buttons {
+      margin-top: 30px;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 20px;
+      max-width: 1000px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .awareness-container button {
+      width: 300px;
+      padding: 25px;
+      margin: 12px;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 15px;
+      font-size: 30px;
+      cursor: pointer;
+      color: white;
+      transition: all 0.4s ease;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+      flex-direction: column;
+      gap: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .awareness-container button:hover {
+      transform: translateY(-8px) scale(1.05);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+    }
+    
+    .awareness-container button:active {
+      transform: translateY(-2px);
+    }
+    
+    .search-section {
+      margin: 50px auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      height: 100px;
+      width: 100%;
+      max-width: 600%;
+    }
+    
+    .search-box {
+      position: relative;
+      display: flex;
+      align-items: center;
+      width: 100%;
+      max-width: 500px;
+    }
+    
+    .search-box input {
+      padding: 15px 15px 15px 50px;
+      font-size: 1.2rem;
+      border-radius: 15px;
+      border: none;
+      width: 100%;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+    }
+
+    .search-box input:focus {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.2);
+    }
+    
+    .search-icon {
+      position: absolute;
+      left: 15px;
+      font-size: 1.5rem;
+      opacity: 0.7;
+    }
+    
+    .check-btn,
+    .detect-btn,
+    .map-btn {
+      background: linear-gradient(135deg, #0066cc, #3399ff);
+      color: white;
+      font-size: 1.1rem;
+      padding: 15px 25px;
+      border: none;
+      border-radius: 15px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    .detect-btn {
+      background: linear-gradient(135deg, #009688, #26c6da);
+    }
+
+    .map-btn {
+      background: linear-gradient(135deg, #9c27b0, #673ab7);
+    }
+
+    .check-btn:hover,
+    .detect-btn:hover,
+    .map-btn:hover {
+      transform: scale(1.05) translateY(-3px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    }
+
+    /* Button Colors with enhanced gradients */
+    .green {
+      background: linear-gradient(135deg, #28a745, #20c997, #28a745);
+      border-top: 5px solid #1e7e34;
+      animation: glowGreen 3s ease-in-out infinite alternate;
+    }
+    
+    @keyframes glowGreen {
+      0% { box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4); }
+      100% { box-shadow: 0 12px 35px rgba(40, 167, 69, 0.6); }
+    }
+    
+    .yellow { 
+      background: linear-gradient(135deg, #ffc107, #ffca2c, #ffc107);
+      color: #212529;
+      border-top: 5px solid #d39e00;
+      animation: glowYellow 3s ease-in-out infinite alternate;
+    }
+
+    @keyframes glowYellow {
+      0% { box-shadow: 0 8px 25px rgba(255, 193, 7, 0.4); }
+      100% { box-shadow: 0 12px 35px rgba(255, 193, 7, 0.6); }
+    }
+    
+    .red {
+      background: linear-gradient(135deg, #dc3545, #e4606d, #dc3545);
+      border-top: 5px solid #bd2130;
+      animation: glowRed 3s ease-in-out infinite alternate;
+    }
+
+    @keyframes glowRed {
+      0% { box-shadow: 0 8px 25px rgba(220, 53, 69, 0.4); }
+      100% { box-shadow: 0 12px 35px rgba(220, 53, 69, 0.6); }
+    }
+    
+    .emergency { 
+      background: linear-gradient(135deg, #8b0000, #dc3545, #8b0000);
+      font-weight: bold;
+      border-top: 5px solid #600;
+      animation: pulse 2s infinite, glowEmergency 3s ease-in-out infinite alternate;
+      font-size: 1.6rem;
+      padding: 30px 20px;
+    }
+    
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes glowEmergency {
+      0% { box-shadow: 0 8px 25px rgba(139, 0, 0, 0.6); }
+      100% { box-shadow: 0 15px 40px rgba(139, 0, 0, 0.8); }
+    }
+
+    /* Logout button */
+    .logout-btn {
+      background: linear-gradient(135deg, #e74c3c, #c0392b);
+      margin-top: 20px;
+      width: 200px;
+    }
+    
+    .logout-btn:hover {
+      background: linear-gradient(135deg, #c0392b, #a93226);
+    }
+
+    /* =================== Safety Status Display =================== */
+    .safety-status {
+      margin: 30px auto;
+      padding: 25px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.95);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      max-width: 600px;
+      display: none;
+      animation: fadeInUp 0.8s ease-out;
+    }
+
+    .status-safe {
+      border-left: 8px solid #28a745;
+      background: linear-gradient(135deg, rgba(40, 167, 69, 0.1), rgba(255, 255, 255, 0.95));
+    }
+
+    .status-caution {
+      border-left: 8px solid #ffc107;
+      background: linear-gradient(135deg, rgba(255, 193, 7, 0.1), rgba(255, 255, 255, 0.95));
+    }
+
+    .status-danger {
+      border-left: 8px solid #dc3545;
+      background: linear-gradient(135deg, rgba(220, 53, 69, 0.1), rgba(255, 255, 255, 0.95));
+    }
+
+    .status-title {
+      font-size: 2rem;
+      font-weight: bold;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .status-details {
+      font-size: 1.1rem;
+      color: #555;
+      margin-bottom: 15px;
+    }
+
+    .status-actions {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .status-btn {
+      padding: 10px 20px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    /* =================== Safety Map Modal =================== */
+    .safety-map-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      z-index: 1000;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .map-container {
+      width: 90%;
+      height: 80%;
+      max-width: 1200px;
+      background: white;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+      position: relative;
+      animation: slideUp 0.4s ease-out;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(50px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .map-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 20px 30px;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .map-header h2 {
+      margin: 0;
+      font-size: 1.8rem;
+    }
+
+    .close-map {
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: white;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .close-map:hover {
+      background: rgba(255,255,255,0.3);
+      transform: rotate(90deg);
+    }
+
+    #safetyMap {
+      width: 100%;
+      height: calc(100% - 70px);
+    }
+
+    .map-legend {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      z-index: 1000;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .legend-color {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+
+    .legend-safe { background-color: #28a745; }
+    .legend-caution { background-color: #ffc107; }
+    .legend-danger { background-color: #dc3545; }
+
+    /* =================== Emergency Alert Overlay =================== */
+    .emergency-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(139, 0, 0, 0.95);
+      z-index: 9999;
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      animation: emergencyPulse 0.8s infinite alternate;
+    }
+
+    @keyframes emergencyPulse {
+      0% { background: rgba(139, 0, 0, 0.95); }
+      100% { background: rgba(220, 53, 69, 0.95); }
+    }
+
+    .emergency-alert {
+      text-align: center;
+      color: white;
+      padding: 30px;
+      border-radius: 20px;
+      background: rgba(0, 0, 0, 0.7);
+      max-width: 600px;
+      width: 90%;
+      box-shadow: 0 0 100px rgba(255, 0, 0, 0.8);
+      animation: alertPulse 1s infinite alternate;
+    }
+
+    @keyframes alertPulse {
+      0% { transform: scale(1); box-shadow: 0 0 80px rgba(255, 0, 0, 0.6); }
+      100% { transform: scale(1.05); box-shadow: 0 0 120px rgba(255, 0, 0, 0.9); }
+    }
+
+    .emergency-alert h2 {
+      font-size: 3rem;
+      margin-bottom: 20px;
+      color: #ffcc00;
+      text-shadow: 0 0 20px #ffcc00;
+    }
+
+    .emergency-alert p {
+      font-size: 1.5rem;
+      margin-bottom: 15px;
+    }
+
+    .emergency-alert .emergency-number {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: #ffcc00;
+      margin: 20px 0;
+      text-shadow: 0 0 15px #ffcc00;
+    }
+
+    .emergency-alert .address-display {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 15px;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-size: 1.2rem;
+      border-left: 5px solid #ffcc00;
+    }
+
+    .emergency-controls {
+      margin-top: 30px;
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+    }
+
+    .emergency-stop-btn {
+      background: linear-gradient(135deg, #28a745, #20c997);
+      color: white;
+      padding: 15px 30px;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .emergency-stop-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 30px rgba(40, 167, 69, 0.8);
+    }
+
+    /* =================== Highlight Animation =================== */
+    @keyframes highlightSafe {
+      0% { transform: scale(1); box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4); }
+      50% { transform: scale(1.08); box-shadow: 0 15px 40px rgba(40, 167, 69, 0.8); }
+      100% { transform: scale(1); box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4); }
+    }
+
+    @keyframes highlightCaution {
+      0% { transform: scale(1); box-shadow: 0 8px 25px rgba(255, 193, 7, 0.4); }
+      50% { transform: scale(1.08); box-shadow: 0 15px 40px rgba(255, 193, 7, 0.8); }
+      100% { transform: scale(1); box-shadow: 0 8px 25px rgba(255, 193, 7, 0.4); }
+    }
+
+    @keyframes highlightDanger {
+      0% { transform: scale(1); box-shadow: 0 8px 25px rgba(220, 53, 69, 0.4); }
+      50% { transform: scale(1.08); box-shadow: 0 15px 40px rgba(220, 53, 69, 0.8); }
+      100% { transform: scale(1); box-shadow: 0 8px 25px rgba(220, 53, 69, 0.4); }
+    }
+
+    .highlight-safe {
+      animation: highlightSafe 1.5s ease-in-out 3;
+    }
+
+    .highlight-caution {
+      animation: highlightCaution 1.5s ease-in-out 3;
+    }
+
+    .highlight-danger {
+      animation: highlightDanger 1.5s ease-in-out 3;
+    }
+
+    /* =================== Loading Animation =================== */
+    .loading-spinner {
+      display: none;
+      margin: 20px auto;
+      width: 50px;
+      height: 50px;
+      border: 5px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Confetti animation */
+    @keyframes fall {
+      to {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .awareness-container h1 { font-size: 2.5rem; }
+      .awareness-container p { font-size: 1.2rem; padding: 15px; }
+      .awareness-container button { 
+        font-size: 1.2rem; 
+        width: 100%;
+        max-width: 300px;
+        padding: 20px 15px;
+      }
+      .safety-buttons {
+        flex-direction: column;
+        align-items: center;
+      }
+      .search-section {
+        flex-direction: column;
+      }
+      .search-box input {
+        width: 90%;
+      }
+      .status-actions {
+        flex-direction: column;
+      }
+      .map-container {
+        width: 95%;
+        height: 90%;
+      }
+      .map-header h2 {
+        font-size: 1.3rem;
+      }
+      .emergency-alert h2 {
+        font-size: 2rem;
+      }
+      .emergency-alert p {
+        font-size: 1.2rem;
+      }
+      .emergency-alert .emergency-number {
+        font-size: 1.8rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .awareness-container { padding: 60px 15px; }
+      .awareness-container h1 { font-size: 2rem; }
+      .awareness-container p { font-size: 1rem; }
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Emergency Alert Overlay -->
+  <div class="emergency-overlay" id="emergencyOverlay">
+    <div class="emergency-alert" id="emergencyAlert">
+      <h2>🚨 EMERGENCY CALL ACTIVE 🚨</h2>
+      <p><i class="fas fa-phone-volume"></i> LOUD EMERGENCY SOUND IS PLAYING</p>
+      <p>Calling emergency services...</p>
+      <div class="emergency-number" id="emergencyNumberDisplay"></div>
+      <div class="address-display" id="emergencyAddressDisplay"></div>
+      <p><strong>Stay on the line and provide your location!</strong></p>
+      <div class="emergency-controls">
+        <button class="emergency-stop-btn" onclick="stopEmergencySound()">
+          <i class="fas fa-stop-circle"></i> STOP EMERGENCY SOUND
+        </button>
+      </div>
+      <p style="margin-top: 20px; font-size: 0.9rem; color: #aaa;">
+        <i class="fas fa-volume-up"></i> Turn up your volume! Emergency siren is playing...
+      </p>
+    </div>
+  </div>
+
+  <!-- Color changing overlay -->
+  <div class="color-overlay"></div>
+
+  <!-- Particles.js container -->
+  <div id="particles-js"></div>
+
+  <!-- Registration Form -->
+  <div class="form-container" id="registrationContainer">
+    <div class="form-header">
+      <h1>Create Account</h1>
+      <p>Please fill in your details to register</p>
+    </div>
+
+    <form id="registrationForm">
+      <div class="form-row">
+        <div>
+          <label for="username"><i class="fas fa-user"></i> Username</label>
+          <input type="text" id="username" name="username" placeholder="Enter Your Name" required>
+        </div>
+        <div>
+          <label for="email"><i class="fas fa-envelope"></i> Email Address</label>
+          <input type="email" id="email" name="email" placeholder="example@gmail.com" required>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div>
+          <label for="phone"><i class="fas fa-phone"></i> Contact Number</label>
+          <input type="tel" id="phone" name="phone" placeholder="Enter Your Contact Number" required>
+        </div>
+        <div>
+          <label for="emergency"><i class="fas fa-phone-alt"></i> Emergency Number</label>
+          <input type="tel" id="emergency" name="emergency" placeholder="Enter Emergency Number" required>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div style="flex:1;">
+          <label for="address"><i class="fas fa-home"></i> Address</label>
+          <textarea id="address" name="address" placeholder="Enter Your Address" rows="3" required></textarea>
+        </div>
+      </div>
+      
+      <div class="form-row">
+        <div>
+          <label for="password"><i class="fas fa-lock"></i> Password</label>
+          <input type="password" id="password" name="password" placeholder="Create a password" required>
+        </div>
+        <div>
+          <label for="confirmPassword"><i class="fas fa-lock"></i> Confirm Password</label>
+          <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm your password" required>
+        </div>
+      </div>
+
+      <button type="submit">Register Now</button>
+    </form>
+
+    <div class="form-footer">
+      <p>Already have an account? <a href="#" id="showLogin">Sign In</a></p>
+    </div>
+  </div>
+
+  <!-- Login Form -->
+  <div class="form-container login-form hidden" id="loginContainer">
+    <div class="form-header">
+      <h1>Welcome Back</h1>
+      <p>Please login to your account</p>
+    </div>
+
+    <form id="loginForm">
+      <div class="form-row">
+        <div>
+          <label for="loginEmail"><i class="fas fa-envelope"></i> Email Address</label>
+          <input type="email" id="loginEmail" name="loginEmail" placeholder="example@gmail.com" required>
+        </div>
+      </div>
+      
+      <div class="form-row">
+        <div>
+          <label for="loginPassword"><i class="fas fa-lock"></i> Password</label>
+          <input type="password" id="loginPassword" name="loginPassword" placeholder="Enter your password" required>
+        </div>
+      </div>
+
+      <button type="submit">Login</button>
+    </form>
+
+    <div class="form-footer">
+      <p>Don't have an account? <a href="#" id="showRegister">Sign Up</a></p>
+    </div>
+  </div>
+
+  <!-- Awareness Page -->
+  <div class="awareness-container hidden" id="awarenessContainer">
+    <h1 class="fade-in fade-delay-1">Safety Intelligence Hub</h1>
+
+    <p class="fade-in fade-delay-2">
+      Check the safety status of your area and call emergency services if needed.
+    </p>
+
+    <div class="search-section fade-in fade-delay-2">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="areaInput" placeholder="Enter the Area...">
+      </div>
+      <button class="check-btn" onclick="checkSafety()">Check Safety</button>
+      <button class="detect-btn" onclick="detectArea()">📍 Detect My Area</button>
+      <button class="map-btn" onclick="window.location.href='map.html'">🗺️ View Safety Map</button>
+    </div>
+
+    <div class="loading-spinner" id="loadingSpinner"></div>
+
+    <div class="safety-status" id="safetyStatus">
+      <div class="status-title" id="statusTitle"></div>
+      <div class="status-details" id="statusDetails"></div>
+      <div class="status-actions" id="statusActions"></div>
+    </div>
+
+    <div class="safety-buttons fade-in fade-delay-3">
+      <button class="green" id="safeButton" onclick="safe()">Safe Zone ✅</button>
+      <button class="yellow" id="cautionButton" onclick="lessSafe()">Cautious Area ⚠️</button>
+      <button class="red" id="dangerButton" onclick="notSafe()">High Risk Area ❌</button>
+    </div>
+
+    <div class="fade-in fade-delay-4" style="display: flex; justify-content: center; margin-top: 20px;">
+      <button class="emergency" onclick="emergency()">Emergency Call 📞</button>
+    </div>
+
+    <div class="fade-in fade-delay-4">
+      <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+  </div>
+
+  <!-- Safety Map Modal -->
+  <div class="safety-map-modal" id="safetyMapModal">
+    <div class="map-container">
+      <div class="map-header">
+        <h2>🗺️ Safety Heat Map - New York Area</h2>
+        <button class="close-map" onclick="closeSafetyMap()">×</button>
+      </div>
+      <div id="safetyMap"></div>
+      <div class="map-legend">
+        <div class="legend-item">
+          <div class="legend-color legend-safe"></div>
+          <span>Safe Area (Low Risk)</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color legend-caution"></div>
+          <span>Caution Area (Medium Risk)</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color legend-danger"></div>
+          <span>Danger Area (High Risk)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Leaflet JS library -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  
+  <script>
+    // Professional particles.js configuration
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize particles.js with professional settings
+      if (typeof particlesJS !== 'undefined') {
+        particlesJS('particles-js', {
+          particles: {
+            number: {
+              value: 120,
+              density: {
+                enable: true,
+                value_area: 800
+              }
+            },
+            color: {
+              value: ['#ffffff', '#ff6b6b', '#4ecdc4', '#45b7d1', '#ffa726', '#96ceb4']
+            },
+            shape: {
+              type: 'circle',
+              stroke: {
+                width: 0,
+                color: '#000000'
+              }
+            },
+            opacity: {
+              value: 0.7,
+              random: true,
+              anim: {
+                enable: true,
+                speed: 1,
+                opacity_min: 0.3,
+                sync: false
+              }
+            },
+            size: {
+              value: 3,
+              random: true,
+              anim: {
+                enable: true,
+                speed: 3,
+                size_min: 0.3,
+                sync: false
+              }
+            },
+            line_linked: {
+              enable: true,
+              distance: 150,
+              color: '#ffffff',
+              opacity: 0.2,
+              width: 1
+            },
+            move: {
+              enable: true,
+              speed: 2,
+              direction: 'none',
+              random: true,
+              straight: false,
+              out_mode: 'bounce',
+              bounce: false,
+              attract: {
+                enable: false,
+                rotateX: 600,
+                rotateY: 1200
+              }
+            }
+          },
+          interactivity: {
+            detect_on: 'canvas',
+            events: {
+              onhover: {
+                enable: true,
+                mode: 'repulse'
+              },
+              onclick: {
+                enable: true,
+                mode: 'push'
+              },
+              resize: true
+            },
+            modes: {
+              grab: {
+                distance: 400,
+                line_linked: {
+                  opacity: 1
+                }
+              },
+              bubble: {
+                distance: 400,
+                size: 40,
+                duration: 2,
+                opacity: 8,
+                speed: 3
+              },
+              repulse: {
+                distance: 100,
+                duration: 0.4
+              },
+              push: {
+                particles_nb: 4
+              },
+              remove: {
+                particles_nb: 2
+              }
+            }
+          },
+          retina_detect: true
+        });
+        console.log('Professional particles.js initialized successfully');
+      } else {
+        console.log('Particles.js library not loaded');
+      }
+
+      // Initialize form event listeners
+      initializeFormEvents();
+      
+      // Check if user is already logged in
+      checkLoginStatus();
+    });
+
+    // DOM Elements
+    const registrationContainer = document.getElementById('registrationContainer');
+    const loginContainer = document.getElementById('loginContainer');
+    const awarenessContainer = document.getElementById('awarenessContainer');
+    const safetyStatus = document.getElementById('safetyStatus');
+    const statusTitle = document.getElementById('statusTitle');
+    const statusDetails = document.getElementById('statusDetails');
+    const statusActions = document.getElementById('statusActions');
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    const safeButton = document.getElementById('safeButton');
+    const cautionButton = document.getElementById('cautionButton');
+    const dangerButton = document.getElementById('dangerButton');
+    const safetyMapModal = document.getElementById('safetyMapModal');
+    const emergencyOverlay = document.getElementById('emergencyOverlay');
+    const emergencyNumberDisplay = document.getElementById('emergencyNumberDisplay');
+    const emergencyAddressDisplay = document.getElementById('emergencyAddressDisplay');
+    
+    // Emergency sound variables
+    let emergencyAudioContext = null;
+    let emergencyOscillator = null;
+    let emergencyGainNode = null;
+    let isEmergencySoundPlaying = false;
+    
+    // Map variables
+    let safetyMap = null;
+    let mapMarkers = [];
+
+    // Database of area safety ratings with coordinates
+    const areaSafetyDatabase = {
+      // Safe areas with coordinates
+      "new york": { level: "safe", lat: 40.7128, lng: -74.0060 },
+      "manhattan": { level: "safe", lat: 40.7831, lng: -73.9712 },
+      "central park": { level: "safe", lat: 40.7812, lng: -73.9665 },
+      "midtown": { level: "safe", lat: 40.7549, lng: -73.9840 },
+      "battery park": { level: "safe", lat: 40.7033, lng: -74.0170 },
+      "times square": { level: "safe", lat: 40.7580, lng: -73.9855 },
+      "upper east side": { level: "safe", lat: 40.7736, lng: -73.9566 },
+      "upper west side": { level: "safe", lat: 40.7870, lng: -73.9754 },
+      "soho": { level: "safe", lat: 40.7233, lng: -74.0030 },
+      "tribeca": { level: "safe", lat: 40.7163, lng: -74.0086 },
+      "greenwich village": { level: "safe", lat: 40.7336, lng: -74.0027 },
+      "chelsea": { level: "safe", lat: 40.7465, lng: -74.0014 },
+      
+      // Caution areas with coordinates
+      "brooklyn": { level: "caution", lat: 40.6782, lng: -73.9442 },
+      "queens": { level: "caution", lat: 40.7282, lng: -73.7949 },
+      "bronx": { level: "caution", lat: 40.8448, lng: -73.8648 },
+      "harlem": { level: "caution", lat: 40.8116, lng: -73.9465 },
+      "east village": { level: "caution", lat: 40.7265, lng: -73.9815 },
+      "chinatown": { level: "caution", lat: 40.7158, lng: -73.9970 },
+      "lower east side": { level: "caution", lat: 40.7150, lng: -73.9843 },
+      "hell's kitchen": { level: "caution", lat: 40.7638, lng: -73.9918 },
+      "astoria": { level: "caution", lat: 40.7644, lng: -73.9235 },
+      "williamsburg": { level: "caution", lat: 40.7081, lng: -73.9571 },
+      "bushwick": { level: "caution", lat: 40.6943, lng: -73.9213 },
+      
+      // High risk areas with coordinates
+      "alphabet city": { level: "danger", lat: 40.7253, lng: -73.9803 },
+      "hunts point": { level: "danger", lat: 40.8120, lng: -73.8801 },
+      "brownsville": { level: "danger", lat: 40.6638, lng: -73.9100 },
+      "east new york": { level: "danger", lat: 40.6568, lng: -73.8835 },
+      "bedford-stuyvesant": { level: "danger", lat: 40.6872, lng: -73.9417 },
+      "jamaica": { level: "danger", lat: 40.6915, lng: -73.8055 },
+      "south bronx": { level: "danger", lat: 40.8206, lng: -73.9090 },
+      "east harlem": { level: "danger", lat: 40.7957, lng: -73.9389 },
+      "coney island": { level: "danger", lat: 40.5755, lng: -73.9707 },
+      "flatbush": { level: "danger", lat: 40.6404, lng: -73.9602 }
+    };
+
+    // Initialize form event listeners
+    function initializeFormEvents() {
+      const showLoginLink = document.getElementById('showLogin');
+      const showRegisterLink = document.getElementById('showRegister');
+      const logoutBtn = document.getElementById('logoutBtn');
+      
+      showLoginLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        registrationContainer.classList.add('hidden');
+        loginContainer.classList.remove('hidden');
+      });
+      
+      showRegisterLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        loginContainer.classList.add('hidden');
+        registrationContainer.classList.remove('hidden');
+      });
+      
+      logoutBtn.addEventListener('click', function() {
+        localStorage.removeItem('isLoggedIn');
+        localStorage.removeItem('userEmail');
+        localStorage.removeItem('emergencyNumber');
+        awarenessContainer.classList.add('hidden');
+        registrationContainer.classList.remove('hidden');
+      });
+      
+      // Registration form
+      document.getElementById('registrationForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        handleRegistration();
+      });
+      
+      // Login form
+      document.getElementById('loginForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        handleLogin();
+      });
+    }
+    
+    // Handle registration
+    function handleRegistration() {
+      const username = document.getElementById("username").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const phone = document.getElementById("phone").value.trim();
+      const emergency = document.getElementById("emergency").value.trim();
+      const address = document.getElementById("address").value.trim();
+      const password = document.getElementById("password").value;
+      const confirmPassword = document.getElementById("confirmPassword").value;
+      
+      // Basic validation
+      if (!username || !email || !phone || !emergency || !address || !password) {
+        alert("Please fill all the fields correctly.");
+        return;
+      }
+      
+      if (password !== confirmPassword) {
+        alert("Passwords do not match!");
+        return;
+      }
+      
+      if (password.length < 6) {
+        alert("Password must be at least 6 characters long.");
+        return;
+      }
+      
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        alert("Please enter a valid email address.");
+        return;
+      }
+      
+      // Store user data
+      const userData = {
+        username,
+        email,
+        phone,
+        emergency,
+        address,
+        password
+      };
+      
+      localStorage.setItem('userData', JSON.stringify(userData));
+      localStorage.setItem('emergencyNumber', emergency);
+      localStorage.setItem('isLoggedIn', 'true');
+      localStorage.setItem('userEmail', email);
+      
+      alert("Registration Successful! Taking you to Safety Hub...");
+      showAwarenessPage();
+      document.getElementById("registrationForm").reset();
+    }
+    
+    // Handle login
+    function handleLogin() {
+      const email = document.getElementById("loginEmail").value.trim();
+      const password = document.getElementById("loginPassword").value;
+      
+      if (!email || !password) {
+        alert("Please enter both email and password.");
+        return;
+      }
+      
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        alert("Please enter a valid email address.");
+        return;
+      }
+      
+      const storedUserData = localStorage.getItem('userData');
+      
+      if (storedUserData) {
+        const userData = JSON.parse(storedUserData);
+        
+        if (userData.email === email && userData.password === password) {
+          localStorage.setItem('isLoggedIn', 'true');
+          localStorage.setItem('userEmail', email);
+          
+          alert("Login Successful! Taking you to Safety Hub...");
+          showAwarenessPage();
+          document.getElementById("loginForm").reset();
+        } else {
+          alert("Invalid email or password. Please try again.");
+        }
+      } else {
+        alert("No account found with this email. Please register first.");
+        loginContainer.classList.add('hidden');
+        registrationContainer.classList.remove('hidden');
+      }
+    }
+    
+    // Check login status
+    function checkLoginStatus() {
+      const isLoggedIn = localStorage.getItem('isLoggedIn');
+      if (isLoggedIn === 'true') {
+        showAwarenessPage();
+      }
+    }
+    
+    // Show awareness page
+    function showAwarenessPage() {
+      registrationContainer.classList.add('hidden');
+      loginContainer.classList.add('hidden');
+      awarenessContainer.classList.remove('hidden');
+    }
+
+    // Safety checking functions
+    function checkSafety() {
+      const areaInput = document.getElementById("areaInput").value.trim().toLowerCase();
+      if (!areaInput) {
+        alert("Please enter an area to check safety.");
+        return;
+      }
+      
+      loadingSpinner.style.display = 'block';
+      safetyStatus.style.display = 'none';
+      
+      safeButton.classList.remove('highlight-safe');
+      cautionButton.classList.remove('highlight-caution');
+      dangerButton.classList.remove('highlight-danger');
+      
+      setTimeout(() => {
+        loadingSpinner.style.display = 'none';
+        
+        let safetyLevel = "unknown";
+        let foundArea = "";
+        let areaData = null;
+        
+        // Search for the area in our database
+        for (const [area, data] of Object.entries(areaSafetyDatabase)) {
+          if (areaInput.includes(area) || area.includes(areaInput)) {
+            safetyLevel = data.level;
+            foundArea = area;
+            areaData = data;
+            break;
+          }
+        }
+        
+        // If area not found in database, use intelligent prediction
+        if (safetyLevel === "unknown") {
+          const safeKeywords = ["park", "garden", "plaza", "square", "downtown", "uptown", "central"];
+          const cautionKeywords = ["east", "west", "village", "town", "heights"];
+          const dangerKeywords = ["alley", "point", "field", "hollow", "bottom"];
+          
+          if (safeKeywords.some(keyword => areaInput.includes(keyword))) {
+            safetyLevel = "safe";
+          } else if (dangerKeywords.some(keyword => areaInput.includes(keyword))) {
+            safetyLevel = "danger";
+          } else if (cautionKeywords.some(keyword => areaInput.includes(keyword))) {
+            safetyLevel = "caution";
+          } else {
+            // Default to caution for unknown areas
+            safetyLevel = "caution";
+          }
+          
+          foundArea = areaInput;
+        }
+        
+        // Display the safety status with enhanced animations
+        displaySafetyStatus(foundArea, safetyLevel);
+        
+        // If we have coordinates, show location on map
+        if (areaData && areaData.lat && areaData.lng) {
+          setTimeout(() => {
+            openSafetyMap();
+            if (safetyMap) {
+              safetyMap.setView([areaData.lat, areaData.lng], 13);
+              addMarkerToMap(areaData.lat, areaData.lng, foundArea, safetyLevel);
+            }
+          }, 500);
+        }
+        
+      }, 1500);
+    }
+
+    function displaySafetyStatus(area, level) {
+      // Reset all status classes
+      safetyStatus.className = 'safety-status';
+      
+      let title = "";
+      let details = "";
+      let actionsHTML = "";
+      
+      switch(level) {
+        case "safe":
+          safetyStatus.classList.add('status-safe');
+          title = "✅ Safe Area Detected";
+          details = `The area "${area}" is considered safe with low crime rates and good security presence.`;
+          actionsHTML = `
+            <button class="status-btn" style="background:#28a745; color:white;" onclick="openSafetyMap()">View on Map</button>
+            <button class="status-btn" style="background:#17a2b8; color:white;">View Safety Tips</button>
+          `;
+          safeButton.classList.add('highlight-safe');
+          break;
+          
+        case "caution":
+          safetyStatus.classList.add('status-caution');
+          title = "⚠️ Exercise Caution";
+          details = `The area "${area}" has moderate safety concerns. Stay alert and avoid isolated areas.`;
+          actionsHTML = `
+            <button class="status-btn" style="background:#ffc107; color:black;" onclick="openSafetyMap()">View on Map</button>
+            <button class="status-btn" style="background:#17a2b8; color:white;">Emergency Contacts</button>
+          `;
+          cautionButton.classList.add('highlight-caution');
+          break;
+          
+        case "danger":
+          safetyStatus.classList.add('status-danger');
+          title = "🚨 High Risk Area";
+          details = `Warning! The area "${area}" has high crime rates. Avoid if possible and stay vigilant.`;
+          actionsHTML = `
+            <button class="status-btn" style="background:#dc3545; color:white;" onclick="emergency()">Call Emergency</button>
+            <button class="status-btn" style="background:#6c757d; color:white;" onclick="openSafetyMap()">View on Map</button>
+          `;
+          dangerButton.classList.add('highlight-danger');
+          break;
+          
+        default:
+          safetyStatus.classList.add('status-caution');
+          title = "🔍 Area Analysis";
+          details = `Limited data available for "${area}". Proceed with general safety precautions.`;
+          actionsHTML = `
+            <button class="status-btn" style="background:#17a2b8; color:white;">General Safety Tips</button>
+          `;
+          cautionButton.classList.add('highlight-caution');
+      }
+      
+      // Update the status display
+      statusTitle.innerHTML = title;
+      statusDetails.textContent = details;
+      statusActions.innerHTML = actionsHTML;
+      
+      // Show the status container with animation
+      safetyStatus.style.display = 'block';
+    }
+
+    function detectArea() {
+      if (navigator.geolocation) {
+        loadingSpinner.style.display = 'block';
+        
+        navigator.geolocation.getCurrentPosition(
+          function(position) {
+            setTimeout(() => {
+              loadingSpinner.style.display = 'none';
+              
+              const mockAreas = [
+                "Central Park", "Times Square", "Brooklyn Heights", 
+                "East Village", "Harlem", "Financial District"
+              ];
+              const randomArea = mockAreas[Math.floor(Math.random() * mockAreas.length)];
+              
+              document.getElementById("areaInput").value = randomArea;
+              
+              alert(`📍 Location detected: ${randomArea}\nLat: ${position.coords.latitude.toFixed(4)}, Lng: ${position.coords.longitude.toFixed(4)}`);
+              
+              setTimeout(() => checkSafety(), 500);
+              
+            }, 1000);
+          },
+          function(error) {
+            loadingSpinner.style.display = 'none';
+            alert("Unable to detect your location. Please enter your area manually.");
+          }
+        );
+      } else {
+        alert("Geolocation is not supported by this browser. Please enter your area manually.");
+      }
+    }
+
+    function safe() {
+      displaySafetyStatus("Manual Report", "safe");
+    }
+
+    function lessSafe() {
+      displaySafetyStatus("Manual Report", "caution");
+    }
+
+    function notSafe() {
+      displaySafetyStatus("Manual Report", "danger");
+    }
+
+    // EMERGENCY FUNCTION WITH LOUD SOUND (Works online and offline)
+    function emergency() {
+      const emergencyNumber = localStorage.getItem("emergencyNumber") || "911";
+      const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+      const address = userData.address || 'Location not specified';
+      
+      if (confirm(`🚨 EMERGENCY ALERT!\n\nCall ${emergencyNumber} immediately?\n\nYour address: ${address}\n\nPress OK to activate emergency sound and call.`)) {
+        // Show emergency overlay
+        emergencyNumberDisplay.textContent = `📞 Calling: ${emergencyNumber}`;
+        emergencyAddressDisplay.textContent = `📍 Your Location: ${address}`;
+        
+        // Start the loud emergency sound (works online and offline)
+        startEmergencySound();
+        
+        // Show the emergency overlay
+        emergencyOverlay.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+        
+        // Simulate call connection
+        setTimeout(() => {
+          alert(`Connected to emergency services at ${emergencyNumber}\n\nStay on the line and provide your location:\n${address}`);
+        }, 3000);
+      }
+    }
+
+    // START LOUD EMERGENCY SOUND (Works online and offline)
+    function startEmergencySound() {
+      if (isEmergencySoundPlaying) return;
+      
+      isEmergencySoundPlaying = true;
+      
+      try {
+        // Create Web Audio API context (works offline)
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        emergencyAudioContext = new AudioContext();
+        
+        // Create oscillator for siren sound
+        emergencyOscillator = emergencyAudioContext.createOscillator();
+        emergencyGainNode = emergencyAudioContext.createGain();
+        
+        // Connect nodes
+        emergencyOscillator.connect(emergencyGainNode);
+        emergencyGainNode.connect(emergencyAudioContext.destination);
+        
+        // Configure siren sound - LOUD and attention-grabbing
+        emergencyOscillator.type = 'sawtooth'; // More piercing sound
+        
+        // Create alternating siren effect
+        let highFreq = 1200; // High pitch
+        let lowFreq = 600;   // Low pitch
+        let currentFreq = highFreq;
+        let sirenInterval;
+        
+        // Set initial frequency
+        emergencyOscillator.frequency.setValueAtTime(currentFreq, emergencyAudioContext.currentTime);
+        
+        // Start the oscillator
+        emergencyOscillator.start();
+        
+        // Set volume to MAXIMUM (clamped to safe level)
+        emergencyGainNode.gain.setValueAtTime(0.8, emergencyAudioContext.currentTime); // Maximum safe volume
+        
+        // Create alternating siren effect
+        sirenInterval = setInterval(() => {
+          currentFreq = (currentFreq === highFreq) ? lowFreq : highFreq;
+          emergencyOscillator.frequency.setValueAtTime(
+            currentFreq, 
+            emergencyAudioContext.currentTime
+          );
+        }, 300); // Change pitch every 300ms for siren effect
+        
+        // Store interval for cleanup
+        window.sirenInterval = sirenInterval;
+        
+        console.log("Emergency siren sound started");
+        
+      } catch (error) {
+        console.error("Failed to play emergency sound:", error);
+        // Fallback: Use browser's built-in alert sound if available
+        try {
+          // Try to play a beep using the older method
+          const beep = new Audio("data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEAQB8AAEAfAAABAAgAZGF0YQ");
+          beep.volume = 1.0;
+          beep.play().catch(e => console.log("Could not play fallback sound"));
+        } catch (fallbackError) {
+          console.log("No audio support available");
+        }
+      }
+    }
+
+    // STOP EMERGENCY SOUND
+    function stopEmergencySound() {
+      if (!isEmergencySoundPlaying) return;
+      
+      isEmergencySoundPlaying = false;
+      
+      // Stop the siren interval
+      if (window.sirenInterval) {
+        clearInterval(window.sirenInterval);
+      }
+      
+      // Stop audio nodes
+      try {
+        if (emergencyOscillator) {
+          emergencyOscillator.stop();
+        }
+        if (emergencyAudioContext) {
+          emergencyAudioContext.close();
+        }
+      } catch (error) {
+        console.error("Error stopping emergency sound:", error);
+      }
+      
+      // Reset variables
+      emergencyAudioContext = null;
+      emergencyOscillator = null;
+      emergencyGainNode = null;
+      
+      // Hide emergency overlay
+      emergencyOverlay.style.display = 'none';
+      document.body.style.overflow = 'auto';
+      
+      console.log("Emergency siren sound stopped");
+    }
+
+    // Safety Map Functions
+    function openSafetyMap() {
+      // Instead of opening a modal, redirect to map.html
+      window.location.href = "map.html";
+    }
+
+    function closeSafetyMap() {
+      safetyMapModal.style.display = 'none';
+      document.body.style.overflow = 'auto';
+    }
+
+    function initializeSafetyMap() {
+      // Default to New York City center
+      safetyMap = L.map('safetyMap').setView([40.7128, -74.0060], 11);
+      
+      // Add OpenStreetMap tiles
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors',
+        maxZoom: 18
+      }).addTo(safetyMap);
+      
+      console.log('Safety map initialized');
+    }
+
+    function clearMapMarkers() {
+      mapMarkers.forEach(marker => safetyMap.removeLayer(marker));
+      mapMarkers = [];
+    }
+
+    function addMarkerToMap(lat, lng, title, level) {
+      let markerColor;
+      let iconHtml;
+      
+      switch(level) {
+        case "safe":
+          markerColor = '#28a745';
+          iconHtml = '<div style="background-color:' + markerColor + '; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.3);"></div>';
+          break;
+        case "caution":
+          markerColor = '#ffc107';
+          iconHtml = '<div style="background-color:' + markerColor + '; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.3);"></div>';
+          break;
+        case "danger":
+          markerColor = '#dc3545';
+          iconHtml = '<div style="background-color:' + markerColor + '; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.3);"></div>';
+          break;
+        default:
+          markerColor = '#6c757d';
+          iconHtml = '<div style="background-color:' + markerColor + '; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.3);"></div>';
+      }
+      
+      const customIcon = L.divIcon({
+        html: iconHtml,
+        iconSize: [26, 26],
+        iconAnchor: [13, 13],
+        className: 'safety-marker'
+      });
+      
+      const marker = L.marker([lat, lng], { icon: customIcon })
+        .addTo(safetyMap)
+        .bindPopup(`<b>${title}</b><br>Safety Level: ${level.toUpperCase()}`);
+      
+      mapMarkers.push(marker);
+    }
+
+    function addAllSafetyMarkers() {
+      // Add markers for all areas in database
+      for (const [area, data] of Object.entries(areaSafetyDatabase)) {
+        if (data.lat && data.lng) {
+          addMarkerToMap(data.lat, data.lng, area, data.level);
+        }
+      }
+      
+      // Add user's current area from input if available
+      const areaInput = document.getElementById("areaInput").value.trim().toLowerCase();
+      if (areaInput) {
+        // Try to find the area in database
+        for (const [area, data] of Object.entries(areaSafetyDatabase)) {
+          if (areaInput.includes(area) || area.includes(areaInput)) {
+            if (data.lat && data.lng) {
+              addMarkerToMap(data.lat, data.lng, "Your Area: " + area, data.level);
+              safetyMap.setView([data.lat, data.lng], 13);
+            }
+            break;
+          }
+        }
+      }
+    }
+
+    // Close map when clicking outside
+    safetyMapModal.addEventListener('click', function(e) {
+      if (e.target === safetyMapModal) {
+        closeSafetyMap();
+      }
+    });
+
+    // Emergency sound cleanup when page is hidden
+    document.addEventListener('visibilitychange', function() {
+      if (document.hidden && isEmergencySoundPlaying) {
+        // Optionally pause or stop sound when page is not visible
+        // This prevents sound from playing in background tabs
+      }
+    });
+  </script>
+</body>
+</html>

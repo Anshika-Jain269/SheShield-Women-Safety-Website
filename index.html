@@ -1,0 +1,1509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>SheShield</title>
+
+  <meta name="description" content="SheShield is a women safety website that provides emergency alerts, safety resources, and quick access to help for users. A simple and useful student project.">
+
+  <meta name="keywords" content="women safety website, emergency help website, safety resources, student project, web development project">
+
+  
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script src="encryption.js"></script>
+</head>
+  <style>
+    /* Reset and base styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* Your existing CSS remains - I'm fixing the video modal layout */
+
+    /* Video Modal Styles - FIXED LAYOUT */
+    .video-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.98);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      padding: 15px;
+      overflow-y: auto;
+    }
+
+    .video-modal.active {
+      display: flex;
+    }
+
+    .video-container {
+      width: 100%;
+      max-width: 900px;
+      max-height: 95vh;
+      background: #000;
+      border-radius: 15px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 30px 70px rgba(0, 0, 0, 0.8);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .video-header {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      padding: 15px 20px;
+      color: white;
+      text-align: center;
+      border-bottom: 3px solid #ff416c;
+      flex-shrink: 0;
+    }
+
+    .video-header h3 {
+      margin: 0 0 5px 0;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .video-header p {
+      margin: 0;
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .video-timer {
+      display: inline-block;
+      background: rgba(255, 65, 108, 0.9);
+      padding: 3px 10px;
+      border-radius: 15px;
+      font-size: 12px;
+      font-weight: bold;
+      margin-top: 5px;
+    }
+
+    /* Main content area - FIXED HEIGHT */
+    .video-content-area {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+      position: relative;
+    }
+
+    .animated-video-container {
+      position: relative;
+      width: 100%;
+      height: 300px;
+      background: linear-gradient(135deg, #0a192f, #112240);
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .animation-scene {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    .step-display {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(255, 65, 108, 0.9);
+      color: white;
+      padding: 5px 10px;
+      border-radius: 15px;
+      font-weight: bold;
+      z-index: 100;
+      font-size: 12px;
+    }
+
+    /* Defense Animation Graphics - SCALED DOWN */
+    .defense-animation {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .person {
+      position: absolute;
+      transition: all 0.5s ease;
+    }
+
+    .woman {
+      width: 80px;
+      height: 160px;
+      z-index: 2;
+    }
+
+    .woman-body {
+      width: 50px;
+      height: 100px;
+      background: linear-gradient(45deg, #ff4081, #f50057);
+      border-radius: 25px 25px 8px 8px;
+      position: absolute;
+      bottom: 0;
+      left: 15px;
+    }
+
+    .woman-head {
+      width: 40px;
+      height: 40px;
+      background: #ffccbc;
+      border-radius: 50%;
+      position: absolute;
+      bottom: 100px;
+      left: 20px;
+    }
+
+    .woman-arm {
+      width: 50px;
+      height: 12px;
+      background: #ff4081;
+      border-radius: 6px;
+      position: absolute;
+      transition: transform 0.3s ease;
+    }
+
+    .arm-left {
+      bottom: 60px;
+      left: -8px;
+      transform-origin: right center;
+    }
+
+    .arm-right {
+      bottom: 60px;
+      right: -8px;
+      transform-origin: left center;
+    }
+
+    .woman-hand {
+      width: 20px;
+      height: 20px;
+      background: #ffccbc;
+      border-radius: 50%;
+      position: absolute;
+    }
+
+    .hand-left {
+      bottom: 55px;
+      left: -25px;
+    }
+
+    .hand-right {
+      bottom: 55px;
+      right: -25px;
+    }
+
+    .attacker {
+      width: 80px;
+      height: 160px;
+      z-index: 1;
+    }
+
+    .attacker-body {
+      width: 50px;
+      height: 100px;
+      background: linear-gradient(45deg, #78909c, #546e7a);
+      border-radius: 25px 25px 8px 8px;
+      position: absolute;
+      bottom: 0;
+      left: 15px;
+    }
+
+    .attacker-head {
+      width: 40px;
+      height: 40px;
+      background: #bdbdbd;
+      border-radius: 50%;
+      position: absolute;
+      bottom: 100px;
+      left: 20px;
+    }
+
+    .grab-hand {
+      width: 30px;
+      height: 30px;
+      background: rgba(255, 152, 0, 0.8);
+      border-radius: 50%;
+      position: absolute;
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.8; }
+      50% { transform: scale(1.2); opacity: 1; }
+    }
+
+    .escape-motion {
+      width: 40px;
+      height: 40px;
+      background: rgba(76, 175, 80, 0.8);
+      border-radius: 50%;
+      position: absolute;
+      animation: escapeMove 1s ease-out;
+    }
+
+    @keyframes escapeMove {
+      0% { transform: scale(0); opacity: 0; }
+      50% { transform: scale(1.5); opacity: 1; }
+      100% { transform: scale(0); opacity: 0; }
+    }
+
+    /* Detailed Explanation Panel - FIXED HEIGHT */
+    .explanation-panel {
+      flex: 1;
+      overflow-y: auto;
+      background: rgba(0, 0, 0, 0.9);
+      padding: 15px;
+      border-top: 2px solid #ff416c;
+      max-height: 250px;
+    }
+
+    .technique-title {
+      color: #ffcc00;
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    .technique-description {
+      color: white;
+      font-size: 14px;
+      line-height: 1.4;
+      margin-bottom: 10px;
+    }
+
+    .step-by-step {
+      background: rgba(255, 65, 108, 0.1);
+      padding: 10px;
+      border-radius: 8px;
+      border-left: 3px solid #ff416c;
+      margin-bottom: 10px;
+    }
+
+    .step-item {
+      color: white;
+      margin-bottom: 8px;
+      padding-left: 20px;
+      position: relative;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .step-item:before {
+      content: "✓";
+      color: #4CAF50;
+      position: absolute;
+      left: 0;
+      font-weight: bold;
+    }
+
+    .key-points {
+      background: rgba(102, 126, 234, 0.1);
+      padding: 10px;
+      border-radius: 8px;
+      margin-top: 10px;
+      border-left: 3px solid #667eea;
+    }
+
+    .key-point {
+      color: #ffcc00;
+      margin-bottom: 6px;
+      font-weight: bold;
+      font-size: 13px;
+    }
+
+    /* Pause Overlay - FIXED POSITION */
+    .pause-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.95);
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 200;
+      padding: 15px;
+      overflow-y: auto;
+    }
+
+    .pause-overlay.active {
+      display: flex;
+    }
+
+    .pause-content {
+      width: 100%;
+      max-width: 800px;
+      text-align: center;
+      color: white;
+      max-height: 100%;
+      overflow-y: auto;
+      padding: 10px;
+    }
+
+    .pause-header {
+      background: rgba(255, 65, 108, 0.9);
+      padding: 10px 15px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .pause-icon {
+      font-size: 24px;
+      color: white;
+    }
+
+    .pause-text {
+      font-size: 18px;
+      font-weight: bold;
+      color: white;
+    }
+
+    .pause-instructions {
+      background: rgba(0, 0, 0, 0.7);
+      padding: 15px;
+      border-radius: 10px;
+      border: 2px solid #667eea;
+      margin-bottom: 15px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .pause-instructions h3 {
+      color: #ffcc00;
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+
+    .pause-instructions p {
+      color: white;
+      font-size: 14px;
+      line-height: 1.4;
+      margin-bottom: 10px;
+    }
+
+    .technique-steps {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin: 10px 0;
+    }
+
+    .step-card {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 10px;
+      border-radius: 8px;
+      border-left: 3px solid #ff416c;
+    }
+
+    .step-number {
+      background: #ff416c;
+      color: white;
+      width: 25px;
+      height: 25px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .step-text {
+      color: white;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .resume-btn {
+      background: linear-gradient(135deg, #4CAF50, #2E7D32);
+      color: white;
+      border: none;
+      padding: 10px 25px;
+      border-radius: 25px;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 15px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s ease;
+    }
+
+    .resume-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(76, 175, 80, 0.6);
+    }
+
+    .sound-indicator {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(0, 150, 0, 0.8);
+      color: white;
+      padding: 4px 8px;
+      border-radius: 8px;
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      z-index: 100;
+    }
+
+    .close-video {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: linear-gradient(135deg, #ff416c, #ff4b2b);
+      color: white;
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      z-index: 1002;
+      box-shadow: 0 3px 10px rgba(255, 65, 108, 0.5);
+    }
+
+    .close-video:hover {
+      background: linear-gradient(135deg, #ff4b2b, #ff416c);
+      transform: scale(1.1) rotate(90deg);
+    }
+
+    /* Video Controls - FIXED POSITION */
+    .video-controls {
+      background: linear-gradient(135deg, #1a1a2e, #16213e);
+      padding: 15px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      border-top: 2px solid rgba(102, 126, 234, 0.6);
+      flex-shrink: 0;
+    }
+
+    .video-controls button {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-width: 110px;
+      justify-content: center;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .video-controls button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(102, 126, 234, 0.6);
+    }
+
+    .video-controls button.home-btn {
+      background: linear-gradient(135deg, #4CAF50, #2E7D32);
+    }
+
+    .video-controls button.restart-btn {
+      background: linear-gradient(135deg, #ff9800, #f57c00);
+    }
+
+    .video-controls button.pause-btn {
+      background: linear-gradient(135deg, #2196F3, #1976D2);
+    }
+
+    .video-controls button.next-btn {
+      background: linear-gradient(135deg, #9C27B0, #7B1FA2);
+    }
+
+    .video-controls button.prev-btn {
+      background: linear-gradient(135deg, #607D8B, #455A64);
+    }
+
+    /* Hero Buttons */
+    .hero-buttons {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 25px;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 12px 30px;
+      border-radius: 25px;
+      font-weight: 600;
+      font-size: 1rem;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      border: none;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-secondary {
+      background: linear-gradient(135deg, #ff416c, #ff4b2b);
+      color: white;
+      box-shadow: 0 8px 20px rgba(255, 65, 108, 0.4);
+    }
+
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 25px rgba(0, 0, 0, 0.3);
+    }
+
+    .btn i {
+      margin-right: 8px;
+      font-size: 1.1rem;
+    }
+
+    /* Home Section Styles */
+    .home-main {
+      min-height: 100vh;
+      background: linear-gradient(rgba(10, 25, 47, 0.9), rgba(10, 25, 47, 0.95)), url('https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 40px;
+      animation: fadeIn 1s ease-out;
+    }
+
+    .logo i {
+      font-size: 4rem;
+      color: #ff416c;
+      margin-right: 15px;
+    }
+
+    .logo h1 {
+      font-size: 3.5rem;
+      background: linear-gradient(135deg, #667eea, #ff416c);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      font-weight: 800;
+    }
+
+    .navbar {
+      display: flex;
+      gap: 30px;
+      margin-bottom: 60px;
+      animation: fadeIn 1s ease-out 0.3s forwards;
+      opacity: 0;
+    }
+
+    .navbar a {
+      color: #e6f1ff;
+      text-decoration: none;
+      font-size: 1.1rem;
+      font-weight: 600;
+      padding: 10px 20px;
+      border-radius: 30px;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .navbar a:hover {
+      background: rgba(255, 65, 108, 0.2);
+      transform: translateY(-3px);
+    }
+
+    .content {
+      max-width: 800px;
+      animation: fadeIn 1s ease-out 0.6s forwards;
+      opacity: 0;
+    }
+
+    .content h2 {
+      font-size: 3.5rem;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, #667eea, #ffcc00);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      font-weight: 800;
+    }
+
+    .content p {
+      font-size: 1.3rem;
+      margin-bottom: 30px;
+      color: #a8b2d1;
+      line-height: 1.6;
+    }
+
+    /* Services Section */
+    .services-section {
+      padding: 80px 20px;
+      background: #0a192f;
+      text-align: center;
+    }
+
+    .services-section h2 {
+      font-size: 2.8rem;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, #ff416c, #ffcc00);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      font-weight: 800;
+    }
+
+    .services-section > p {
+      font-size: 1.2rem;
+      color: #a8b2d1;
+      max-width: 700px;
+      margin: 0 auto 50px;
+      line-height: 1.6;
+    }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 30px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .service-card {
+      background: rgba(17, 34, 64, 0.7);
+      border-radius: 20px;
+      padding: 40px 25px;
+      transition: all 0.4s ease;
+      border: 2px solid rgba(102, 126, 234, 0.2);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .service-card:hover {
+      transform: translateY(-10px);
+      border-color: #667eea;
+      box-shadow: 0 15px 30px rgba(102, 126, 234, 0.3);
+    }
+
+    .service-icon {
+      font-size: 3.5rem;
+      margin-bottom: 25px;
+      background: linear-gradient(135deg, #667eea, #ff416c);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .service-card h3 {
+      font-size: 1.8rem;
+      margin-bottom: 20px;
+      color: #e6f1ff;
+    }
+
+    .service-card p {
+      color: #a8b2d1;
+      line-height: 1.6;
+      margin-bottom: 30px;
+      flex-grow: 1;
+    }
+
+    .service-btn {
+      background: linear-gradient(135deg, #ff416c, #ff4b2b);
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 30px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .service-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(255, 65, 108, 0.4);
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .fade-in {
+      opacity: 0;
+      animation: fadeIn 1s ease-out forwards;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .video-modal {
+        padding: 10px;
+      }
+      
+      .video-container {
+        max-height: 90vh;
+      }
+      
+      .animated-video-container {
+        height: 250px;
+      }
+      
+      .woman, .attacker {
+        transform: scale(0.9);
+      }
+      
+      .video-header h3 {
+        font-size: 18px;
+      }
+      
+      .video-controls {
+        flex-direction: row;
+        gap: 8px;
+        padding: 10px;
+      }
+      
+      .video-controls button {
+        min-width: 100px;
+        padding: 6px 12px;
+        font-size: 11px;
+      }
+      
+      .explanation-panel {
+        max-height: 200px;
+      }
+      
+      .btn {
+        padding: 10px 25px;
+        font-size: 0.9rem;
+      }
+      
+      .logo h1 {
+        font-size: 2.5rem;
+      }
+      
+      .content h2 {
+        font-size: 2.5rem;
+      }
+      
+      .navbar {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      
+      .services-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .animated-video-container {
+        height: 200px;
+      }
+      
+      .woman, .attacker {
+        transform: scale(0.7);
+      }
+      
+      .video-header h3 {
+        font-size: 16px;
+      }
+      
+      .video-header p {
+        font-size: 12px;
+      }
+      
+      .video-controls {
+        gap: 6px;
+      }
+      
+      .video-controls button {
+        min-width: 90px;
+        padding: 5px 10px;
+        font-size: 10px;
+      }
+      
+      .pause-instructions {
+        padding: 10px;
+      }
+      
+      .pause-text {
+        font-size: 16px;
+      }
+      
+      .btn {
+        padding: 8px 20px;
+        font-size: 0.85rem;
+      }
+      
+      .logo h1 {
+        font-size: 2rem;
+      }
+      
+      .content h2 {
+        font-size: 2rem;
+      }
+      
+      .content p {
+        font-size: 1.1rem;
+      }
+    }
+  </style>
+</head>
+<body>  
+  <!-- Video Modal -->
+  <div class="video-modal" id="videoModal">
+    <div class="video-container">
+      <button class="close-video" onclick="closeVideo()">×</button>
+      
+      <div class="video-header">
+        <h3>🚨 Women's Self-Defense Techniques</h3>
+        <p>Detailed guide with step-by-step instructions | <span class="video-timer">3:30 min</span></p>
+      </div>
+      
+      <!-- Main Content Area -->
+      <div class="video-content-area">
+        <!-- Pause Overlay -->
+        <div class="pause-overlay" id="pauseOverlay">
+          <div class="pause-content">
+            <div class="pause-header">
+              <div class="pause-icon">⏸️</div>
+              <div class="pause-text">VIDEO PAUSED - Read Techniques</div>
+            </div>
+            
+            <div id="pauseTechniqueContent" class="pause-instructions">
+              <!-- Pause content will be inserted here -->
+            </div>
+            
+            <button onclick="togglePause()" class="resume-btn">
+              <i class="fas fa-play"></i> Resume Video
+            </button>
+          </div>
+        </div>
+        
+        <!-- Animation Scene -->
+        <div class="animation-scene" id="animationScene">
+          <div class="step-display" id="stepDisplay">Technique 1/6</div>
+          <div class="sound-indicator" id="soundIndicator">
+            <i class="fas fa-volume-up"></i> Sound ON
+          </div>
+          
+          <!-- Animation Area -->
+          <div class="defense-animation" id="defenseAnimation">
+            <!-- Animation elements will be added by JavaScript -->
+          </div>
+        </div>
+        
+        <!-- Explanation Panel -->
+        <div class="explanation-panel" id="explanationPanel">
+          <!-- Content will be filled by JavaScript -->
+        </div>
+      </div>
+      
+      <!-- Video Controls -->
+      <div class="video-controls">
+        <button onclick="prevTechnique()" class="prev-btn">
+          <i class="fas fa-arrow-left"></i> Previous
+        </button>
+        <button onclick="togglePause()" class="pause-btn" id="pauseBtn">
+          <i class="fas fa-pause"></i> Pause
+        </button>
+        <button onclick="nextTechnique()" class="next-btn">
+          <i class="fas fa-arrow-right"></i> Next
+        </button>
+        <button onclick="restartAnimation()" class="restart-btn">
+          <i class="fas fa-redo"></i> Restart
+        </button>
+        <button onclick="toggleSound()" id="soundToggle">
+          <i class="fas fa-volume-mute"></i> Sound
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Home Section -->
+  <div class="home-main" id="home">
+    <div class="logo fade-in" style="animation-delay: 0.5s;">
+      <i class="fas fa-shield-alt"></i>
+      <h1>SHEShield</h1>
+    </div>
+
+    <div class="navbar fade-in" style="animation-delay: 0.5s;">
+      <a href="#"><i class="fas fa-home"></i> Home</a>
+      <a href="login.html"><i class="fas fa-sign-in-alt"></i> Login</a>
+      <a href="#services"><i class="fas fa-cogs"></i> Services</a>
+      <a href="contact.html"><i class="fas fa-envelope"></i> Contact</a>
+    </div>
+
+    <div class="content">
+      <h2>Together for a Safer World</h2>
+      <p>Report, support, and stand against harassment everywhere.</p>
+      <div class="hero-buttons">
+        <a href="login.html" class="btn btn-primary" style="text-decoration: none;">
+          <i class="fas fa-rocket"></i> Get Started
+        </a>
+        <button class="btn btn-secondary" onclick="openVideo()">
+          <i class="fas fa-shield-alt"></i> Watch Self-Defense Guide
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Services Section -->
+  <section id="services" class="services-section">
+    <h2>Our Powerful Features</h2>
+    <p>Comprehensive safety solutions designed to protect and empower you in every situation</p>
+    
+    <div class="services-grid">
+      <div class="service-card">
+        <div class="service-icon">🗺️</div>
+        <h3>Live Safety Map</h3>
+        <p>Real-time safety analysis of any location with heat maps, crime data, and safe route planning</p>
+        <button onclick="openSafetyMap()" class="service-btn">Explore Map</button>
+      </div>
+      
+      <div class="service-card">
+        <div class="service-icon">🕵️</div>
+        <h3>Anonymous Reporting</h3>
+        <p>Report safety concerns completely anonymously to help improve community safety for everyone</p>
+        <button onclick="openAnonymousReport()" class="service-btn">Make Report</button>
+      </div>
+      
+      <div class="service-card">
+        <div class="service-icon">🚨</div>
+        <h3>Emergency SOS</h3>
+        <p>One-tap emergency alert system with live location sharing, loud alarms, and automatic contact notification</p>
+        <button onclick="emergencySOS()" class="service-btn">Learn More</button>
+      </div>
+      
+      <div class="service-card">
+        <div class="service-icon">🎓</div>
+        <h3>Safety Academy</h3>
+        <p>Learn self-defense techniques, safety awareness, and emergency response through interactive tutorials</p>
+        <button onclick="openSafetyResources()" class="service-btn">Start Learning</button>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // Self-Defense Techniques with Detailed Explanations
+    let currentTechnique = 0;
+    let animationTimer;
+    let soundEnabled = true;
+    let isPaused = false;
+    const techniqueDuration = 3500;
+    const totalTechniques = 6;
+
+    const defenseTechniques = [
+      {
+        title: "WRIST GRAB ESCAPE",
+        description: "When someone grabs your wrist, rotate your arm towards their thumb (weakest point).",
+        steps: [
+          "Keep your hand open, don't make a fist",
+          "Rotate your arm TOWARDS their thumb",
+          "Use quick, sharp twisting motion",
+          "Create distance immediately",
+          "Use other hand to push away"
+        ],
+        keyPoints: [
+          "Thumb is the weakest part of a grip",
+          "Quick motion beats strength",
+          "Always create distance after escaping",
+          "Yell loudly to attract attention"
+        ],
+        animation: "wristGrabEscape",
+        sound: "escape1"
+      },
+      {
+        title: "FRONT BEAR HUG ATTACK",
+        description: "Escape from a front bear hug using foot stomp and palm strike.",
+        steps: [
+          "Drop your center of gravity",
+          "Stomp HARD on their foot",
+          "Strike upward into their nose with palm",
+          "Push away with both hands",
+          "Run to safety immediately"
+        ],
+        keyPoints: [
+          "Foot stomp creates shock",
+          "Nose strike causes disorientation",
+          "Push with force for distance",
+          "Never stay close after escape"
+        ],
+        animation: "bearHugEscape",
+        sound: "escape2"
+      },
+      {
+        title: "CHOKE FROM FRONT DEFENSE",
+        description: "Protect your airway and escape from a front choke.",
+        steps: [
+          "TUCK YOUR CHIN to protect throat",
+          "Grab their wrists with BOTH hands",
+          "Twist your body SIDEWAYS",
+          "Use elbow to strike face/neck",
+          "Drop to knees if needed"
+        ],
+        keyPoints: [
+          "Protect airway first",
+          "Two hands against two wrists",
+          "Body twist breaks choke",
+          "Elbow strikes are powerful"
+        ],
+        animation: "chokeEscape",
+        sound: "escape3"
+      },
+      {
+        title: "HAIR PULL DEFENSE",
+        description: "Defend against hair pull using wrist control.",
+        steps: [
+          "Grab their hand with BOTH your hands",
+          "Press hand firmly against your head",
+          "Bend wrist BACKWARDS sharply",
+          "Use knee to strike stomach",
+          "Twist arm to force release"
+        ],
+        keyPoints: [
+          "Two hands against one hand",
+          "Reduces hair pulling pain",
+          "Wrist joints are vulnerable",
+          "Combine with strikes"
+        ],
+        animation: "hairPullDefense",
+        sound: "escape4"
+      },
+      {
+        title: "ARM GRAB ESCAPE",
+        description: "Escape from arm grab using circular motion.",
+        steps: [
+          "Don't pull straight back",
+          "Move arm in CIRCULAR motion",
+          "Go TOWARDS thumb direction",
+          "Use free hand to strike face",
+          "Follow up with knee strike"
+        ],
+        keyPoints: [
+          "Circular motion breaks grip",
+          "Move towards thumb side",
+          "Use strikes to distract",
+          "Practice regularly"
+        ],
+        animation: "armGrabEscape",
+        sound: "escape5"
+      },
+      {
+        title: "MULTIPLE ATTACKERS",
+        description: "Survival strategy against multiple attackers.",
+        steps: [
+          "CREATE DISTANCE immediately",
+          "Use LOUD VOICE: 'HELP! POLICE!'",
+          "Keep all attackers in sight",
+          "Use objects as barriers",
+          "Escape to PUBLIC AREA"
+        ],
+        keyPoints: [
+          "Distance is best defense",
+          "Voice attracts help",
+          "Never get surrounded",
+          "Public places are safer"
+        ],
+        animation: "multipleAttackers",
+        sound: "escape6"
+      }
+    ];
+
+    function openVideo() {
+      document.getElementById('videoModal').classList.add('active');
+      document.body.style.overflow = 'hidden';
+      isPaused = false;
+      updatePauseButton();
+      hidePauseOverlay();
+      startAnimation();
+    }
+
+    function startAnimation() {
+      currentTechnique = 0;
+      updateSoundIndicator();
+      showTechnique();
+      startAnimationTimer();
+    }
+
+    function showTechnique() {
+      const technique = defenseTechniques[currentTechnique];
+      const stepDisplay = document.getElementById('stepDisplay');
+      const explanationPanel = document.getElementById('explanationPanel');
+      
+      stepDisplay.textContent = `Technique ${currentTechnique + 1}/${totalTechniques}`;
+      
+      // Update explanation panel
+      explanationPanel.innerHTML = `
+        <div class="technique-title">${technique.title}</div>
+        <div class="technique-description">${technique.description}</div>
+        
+        <div class="step-by-step">
+          <strong>Step-by-Step:</strong>
+          ${technique.steps.map(step => `<div class="step-item">${step}</div>`).join('')}
+        </div>
+        
+        <div class="key-points">
+          <strong>Key Points:</strong>
+          ${technique.keyPoints.map(point => `<div class="key-point">${point}</div>`).join('')}
+        </div>
+      `;
+      
+      // Update pause overlay content
+      updatePauseOverlayContent(technique);
+      
+      // Clear animation
+      const animationArea = document.getElementById('defenseAnimation');
+      animationArea.innerHTML = '';
+      
+      // Create animation
+      createAnimation(technique.animation);
+      
+      // Play sound
+      if (soundEnabled && !isPaused) {
+        playSoundEffect(technique.sound);
+      }
+    }
+
+    function updatePauseOverlayContent(technique) {
+      const pauseContent = document.getElementById('pauseTechniqueContent');
+      
+      pauseContent.innerHTML = `
+        <h3>📋 ${technique.title}</h3>
+        <p><strong>Description:</strong> ${technique.description}</p>
+        
+        <div style="margin: 15px 0;">
+          <h4 style="color: #ffcc00; margin-bottom: 10px;">🎯 STEP-BY-STEP:</h4>
+          <div class="technique-steps">
+            ${technique.steps.map((step, index) => `
+              <div class="step-card">
+                <div class="step-number">${index + 1}</div>
+                <div class="step-text">${step}</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+        
+        <div>
+          <h4 style="color: #ffcc00; margin-bottom: 10px;">💡 KEY POINTS:</h4>
+          ${technique.keyPoints.map(point => `
+            <p style="color: white; margin: 5px 0;">
+              <span style="color: #4CAF50;">✓</span> ${point}
+            </p>
+          `).join('')}
+        </div>
+        
+        <p style="margin-top: 15px; color: #ffcc00; font-style: italic;">
+          <i class="fas fa-lightbulb"></i> Read and understand these techniques carefully.
+        </p>
+      `;
+    }
+
+    function createAnimation(animationType) {
+      const animationArea = document.getElementById('defenseAnimation');
+      animationArea.innerHTML = '';
+      
+      // Simple animation - just show icons
+      const icon = document.createElement('div');
+      icon.style.fontSize = '80px';
+      icon.style.color = '#ffcc00';
+      icon.style.textAlign = 'center';
+      icon.style.width = '100%';
+      icon.style.position = 'absolute';
+      icon.style.top = '50%';
+      icon.style.transform = 'translateY(-50%)';
+      
+      switch(animationType) {
+        case 'wristGrabEscape':
+          icon.innerHTML = '🔄';
+          break;
+        case 'bearHugEscape':
+          icon.innerHTML = '👊';
+          break;
+        case 'chokeEscape':
+          icon.innerHTML = '👐';
+          break;
+        case 'hairPullDefense':
+          icon.innerHTML = '🤛';
+          break;
+        case 'armGrabEscape':
+          icon.innerHTML = '🌀';
+          break;
+        case 'multipleAttackers':
+          icon.innerHTML = '🏃‍♀️';
+          break;
+      }
+      
+      animationArea.appendChild(icon);
+    }
+
+    function playSoundEffect(soundType) {
+      if (!soundEnabled || isPaused) return;
+      
+      try {
+        const context = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = context.createOscillator();
+        const gainNode = context.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(context.destination);
+        
+        oscillator.frequency.value = 800;
+        oscillator.type = 'sine';
+        
+        gainNode.gain.setValueAtTime(0.2, context.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, context.currentTime + 0.2);
+        
+        oscillator.start(context.currentTime);
+        oscillator.stop(context.currentTime + 0.2);
+      } catch (e) {
+        console.log("Audio not supported");
+      }
+    }
+
+    function startAnimationTimer() {
+      clearInterval(animationTimer);
+      
+      if (isPaused) return;
+      
+      animationTimer = setInterval(() => {
+        if (!isPaused) {
+          currentTechnique++;
+          
+          if (currentTechnique >= totalTechniques) {
+            clearInterval(animationTimer);
+            showCompletionMessage();
+            return;
+          }
+          
+          showTechnique();
+        }
+      }, techniqueDuration);
+    }
+
+    function showCompletionMessage() {
+      const explanationPanel = document.getElementById('explanationPanel');
+      const animationArea = document.getElementById('defenseAnimation');
+      const pauseContent = document.getElementById('pauseTechniqueContent');
+      
+      explanationPanel.innerHTML = `
+        <div class="technique-title" style="color:#4CAF50;">🎯 TRAINING COMPLETE!</div>
+        <div class="technique-description">
+          <p>You've learned 6 essential self-defense techniques.</p>
+          <p><strong>Remember:</strong></p>
+          <p>1. Practice regularly</p>
+          <p>2. Stay aware</p>
+          <p>3. Trust instincts</p>
+          <p>4. Safety first</p>
+        </div>
+      `;
+      
+      pauseContent.innerHTML = `
+        <h3 style="color:#4CAF50;">🎯 TRAINING COMPLETE!</h3>
+        <p><strong>Congratulations!</strong> Training completed successfully.</p>
+        
+        <div style="margin: 15px 0;">
+          <h4 style="color: #4CAF50;">📝 LEARNED TECHNIQUES:</h4>
+          ${defenseTechniques.map(tech => `
+            <p style="color: white; margin: 5px 0;">
+              <span style="color: #4CAF50;">✓</span> ${tech.title}
+            </p>
+          `).join('')}
+        </div>
+        
+        <p style="margin-top: 15px; color: #ffcc00; font-style: italic;">
+          <i class="fas fa-shield-alt"></i> Remember: Your safety is your priority. Practice these techniques regularly.
+        </p>
+      `;
+      
+      animationArea.innerHTML = `
+        <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); text-align:center; color:#4CAF50; font-size:80px;">
+          ✅
+          <div style="font-size:20px; color:white; margin-top:10px;">Training Complete!</div>
+        </div>
+      `;
+    }
+
+    function nextTechnique() {
+      currentTechnique++;
+      if (currentTechnique >= totalTechniques) {
+        currentTechnique = totalTechniques - 1;
+      }
+      clearInterval(animationTimer);
+      isPaused = false;
+      updatePauseButton();
+      hidePauseOverlay();
+      showTechnique();
+      startAnimationTimer();
+    }
+
+    function prevTechnique() {
+      currentTechnique--;
+      if (currentTechnique < 0) {
+        currentTechnique = 0;
+      }
+      clearInterval(animationTimer);
+      isPaused = false;
+      updatePauseButton();
+      hidePauseOverlay();
+      showTechnique();
+      startAnimationTimer();
+    }
+
+    function restartAnimation() {
+      clearInterval(animationTimer);
+      isPaused = false;
+      updatePauseButton();
+      hidePauseOverlay();
+      currentTechnique = 0;
+      showTechnique();
+      startAnimationTimer();
+    }
+
+    function togglePause() {
+      isPaused = !isPaused;
+      updatePauseButton();
+      
+      if (isPaused) {
+        clearInterval(animationTimer);
+        showPauseOverlay();
+      } else {
+        hidePauseOverlay();
+        startAnimationTimer();
+      }
+    }
+
+    function updatePauseButton() {
+      const pauseBtn = document.getElementById('pauseBtn');
+      if (isPaused) {
+        pauseBtn.innerHTML = '<i class="fas fa-play"></i> Resume';
+        pauseBtn.style.background = 'linear-gradient(135deg, #4CAF50, #2E7D32)';
+      } else {
+        pauseBtn.innerHTML = '<i class="fas fa-pause"></i> Pause';
+        pauseBtn.style.background = 'linear-gradient(135deg, #2196F3, #1976D2)';
+      }
+    }
+
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      const soundToggle = document.getElementById('soundToggle');
+      const soundIndicator = document.getElementById('soundIndicator');
+      
+      if (soundEnabled) {
+        soundToggle.innerHTML = '<i class="fas fa-volume-up"></i> Sound';
+        soundIndicator.innerHTML = '<i class="fas fa-volume-up"></i> Sound ON';
+        soundIndicator.style.background = 'rgba(0, 150, 0, 0.8)';
+      } else {
+        soundToggle.innerHTML = '<i class="fas fa-volume-mute"></i> Sound';
+        soundIndicator.innerHTML = '<i class="fas fa-volume-mute"></i> Sound OFF';
+        soundIndicator.style.background = 'rgba(255, 65, 108, 0.8)';
+      }
+    }
+
+    function updateSoundIndicator() {
+      const soundIndicator = document.getElementById('soundIndicator');
+      if (soundEnabled) {
+        soundIndicator.innerHTML = '<i class="fas fa-volume-up"></i> Sound ON';
+        soundIndicator.style.background = 'rgba(0, 150, 0, 0.8)';
+      } else {
+        soundIndicator.innerHTML = '<i class="fas fa-volume-mute"></i> Sound OFF';
+        soundIndicator.style.background = 'rgba(255, 65, 108, 0.8)';
+      }
+    }
+
+    function showPauseOverlay() {
+      document.getElementById('pauseOverlay').classList.add('active');
+    }
+
+    function hidePauseOverlay() {
+      document.getElementById('pauseOverlay').classList.remove('active');
+    }
+
+    function closeVideo() {
+      document.getElementById('videoModal').classList.remove('active');
+      document.body.style.overflow = 'auto';
+      clearInterval(animationTimer);
+    }
+
+    // Service button functions
+    function openSafetyMap() {
+      alert("Safety Map feature would open here. This would show real-time safety data and safe routes.");
+    }
+
+    function openAnonymousReport() {
+      alert("Anonymous Reporting feature would open here. This allows safe, anonymous incident reporting.");
+    }
+
+    function emergencySOS() {
+      alert("Emergency SOS feature would activate here. This would send alerts to emergency contacts with your location.");
+    }
+
+    function openSafetyResources() {
+      alert("Safety Resources would open here. This includes tutorials, guides, and training materials.");
+    }
+
+    // Initialize
+    window.onload = function() {
+      updateSoundIndicator();
+    };
+  </script>
+</body>
+</html>
