@@ -29,17 +29,19 @@
 
 The main objective of SheShield is to create a digital platform that promotes women's safety awareness and provides easy access to emergency resources and support features.
 
-## 🚀 Getting Started
-
 1. Clone the repository:
 
    ```bash
-   git clone <your-repository-url>
+   git clone https://github.com/Anshika-Jain269/SheShield-Women-Safety-Website.git
    ```
 
-2. Open the project folder.
+2. Navigate to the project folder:
 
-3. Run `index.html` in your browser.
+   ```bash
+   cd SheShield-Women-Safety-Website
+   ```
+
+3. Open `index.html` in your browser to run the website.
 
 ## 👩‍💻 Development
 
