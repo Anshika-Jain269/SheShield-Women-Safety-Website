@@ -23,7 +23,6 @@
 - JavaScript
 - Firebase
 - LocalStorage
-- CryptoJS
 - Map APIs
 
 ## 🎯 Project Objective
